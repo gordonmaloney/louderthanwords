@@ -1,0 +1,276 @@
+@import url('https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap');
+
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+
+html, body, #root {
+  height: 100%;
+}
+#root {
+  display: flex;
+  flex-direction: column;
+ }
+.pageContainer {
+position: relative;
+min-height: 100vh;
+}
+
+
+.landingBG {
+  height: 100vh;
+  width: 100vw;
+  background-image: url('./Images/devices\ BW.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden !important;
+  margin: auto;
+}
+
+.landingCont {
+  height: 100vh;
+  width: 100vw;
+overflow: hidden !important;
+background: linear-gradient(90deg, rgba(221,28,26,1) 50%, rgba(221,28,26,0) 100%);
+}
+
+
+
+.landingHeader {
+width: 100vw;
+height: 100vh;
+
+  background-image: url('./Images/Title.png');
+  background-size: contain ;
+  background-position: top left;
+  
+background-repeat: no-repeat;
+overflow: hidden;
+
+}
+@media (max-width: 500px) {
+  .landingHeader {
+    background-size: 160% ;
+  }
+}
+
+.landingDialogue {
+  position: absolute;
+  top: 50%;
+  right: 15%;
+  transform: translate(25%, -50%);
+  width: 280px;
+  height: 200px;
+  background-color: rgba(255, 241, 208, 0.4);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, .25);
+  text-align: center;
+  padding: 20px;
+  font-family: 'Fjalla One', sans-serif;
+  font-size: 1.8em;
+  color: #0d0221
+}
+
+.homeCarouselDialogue{
+  background-color: rgba(255, 241, 208, 0.8);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, .25);
+}
+
+
+
+@media (max-width: 800px) {
+  .landingCont {
+    background: linear-gradient(180deg, rgba(221,28,26,1) 40%, rgba(221,28,26,0) 100%);
+  }
+  .landingDialogue {
+    top: 75%;
+    right: 50%;
+    transform: translate(50%, -50%) scale(0.9);;
+  }
+}
+
+.header {
+  max-width: '100vw';
+  width: 94%;
+  background-color: rgb(221,28,26);
+  font-family: "Fjalla One";
+  font-size: 3em;
+  color: rgb(255, 241, 208);
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3%;
+  position: fixed;
+  z-index: 5;
+}
+
+@media (max-width: 800px) {
+  .header {
+  font-size: 2em;
+}
+}
+
+.footer {
+  transform: translate(0, -100%);
+  width: 94%;
+  background-color: #537A8B;
+  font-family: "Fjalla One";
+  font-size: 0.8em;
+  color: rgb(255, 241, 208);
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+position: absolute;
+  padding: 6px 3%;
+}
+
+html {
+  overflow-y: scroll;
+}
+
+@media (min-width: 600px) {
+  html {
+  scroll-snap-type: y mandatory;
+  }
+}
+
+
+.homeContainer {
+  flex-basis: 50%;
+  min-height: 100vh;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none; 
+  ;}
+  .homeContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+.homeChild {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-align: start;
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+
+.campaignBox {
+  background-color: rgba(255, 241, 208, 0.8);
+  backdrop-filter: blur(5px);
+  width: 270px;
+  height: 270px;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.campaignPageBox {
+  background-color: rgba(255, 241, 208, 0.8);
+  backdrop-filter: blur(5px);
+  width: 90%;
+  height: auto;
+  margin: 0 auto 10px auto;
+  border-radius: 20px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.threeLineEllipsis {
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+  }
+
+
+  a {
+    text-decoration: inherit;
+    color: inherit
+  }
+
+  .shepherdBox {
+    background-color: rgba(255, 241, 208, 0.8);
+    
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, .25);
+    z-index: 5;
+    padding: 10px 10px 5px 10px;
+    border-radius: 15px;
+    max-width: 200px;
+  }
+
+
+  .shepherdBox h3 {
+    margin: 0 0 10px 0;
+    font-family: 'Fjalla One'
+  }
+
+  .highlight {
+    display: inherit;
+  }
+
+  .shepherd-footer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px .5rem 0 .5rem;
+    
+    .shepherd-button:last-child {
+      margin-right: 0;
+    }
+  }
+  
+
+  .shepBtn {
+text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    transition: background 400ms;
+    padding: 8px 10px;
+    transform: scale(0.8);
+    color: #FFF1D0;
+    background-color: #5A788B;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.5rem;
+    outline: 0;
+    border: 0;
+    border-radius: 10px;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    font-size: large;
+    font-family: 'Fjalla One';
+    text-align: center;
+  }
+
+  .shepBtn:hover{
+    background-color: #FFF1D0;
+    color: #5A788B
+  }
+  .shepBtn:active{
+    background-color: #FFF1D0;
+    color: #5A788B
+  }
