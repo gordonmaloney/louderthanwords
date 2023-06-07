@@ -65,9 +65,11 @@ export const CreateTabs = () => {
     title: "",
     blurb: "",
     host: "",
+    hostLink: "",
     uuid: "",
     subject: "",
     target: [],
+    bcc: "",
     channel: "Select",
     prompts: [],
     template: "",
@@ -86,6 +88,8 @@ export const CreateTabs = () => {
     name: "",
     handle: "",
   });
+
+  const [addingBCC, setAddingBCC] = useState(false);
 
   const [addingPrompt, setAddingPrompt] = useState(false);
   const [newPrompt, setNewPrompt] = useState({
@@ -157,19 +161,30 @@ export const CreateTabs = () => {
 
           <div>
             <span style={{ fontFamily: "Fjalla One" }}>
-              Who is running the campaign:
+              Who is running the campaign and how can people find out more:
             </span>
-            <TextField
-              fullWidth
-              id="campaignHost"
-              label="Host"
-              variant="outlined"
-              sx={TextFieldStyle}
-              value={newCampaign.host}
-              onChange={(e) =>
-                setNewCampaign({ ...newCampaign, host: e.target.value })
-              }
-            />
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <TextField
+                id="campaignHost"
+                label="Host"
+                variant="outlined"
+                sx={{ ...TextFieldStyle, width: "49%" }}
+                value={newCampaign.host}
+                onChange={(e) =>
+                  setNewCampaign({ ...newCampaign, host: e.target.value })
+                }
+              />
+              <TextField
+                id="campaignHostLink"
+                label="Link to web or socials"
+                variant="outlined"
+                sx={{ ...TextFieldStyle, width: "49%" }}
+                value={newCampaign.host}
+                onChange={(e) =>
+                  setNewCampaign({ ...newCampaign, hostLink: e.target.value })
+                }
+              />
+            </div>
           </div>
 
           <br />
@@ -226,7 +241,7 @@ export const CreateTabs = () => {
             </TextField>
           </div>
 
-          <div style={{ display: newCampaign.channel == "Select" && "none" }}>
+          <div style={{ margin: "10px 0", display: newCampaign.channel == "Select" && "none" }}>
             <div>
               <span style={{ fontFamily: "Fjalla One" }}>
                 Who or what is the target of the campaign?
@@ -285,21 +300,41 @@ export const CreateTabs = () => {
                     "none",
                 }}
               >
-                <h3 style={{ margin: 0, fontFamily: "Fjalla One" }}>
-                  Your targets:
-                </h3>
-                <ul style={{ margin: 0 }}>
-                  {newCampaign.target.map((targ) => (
-                    <li>
-                      {targ.name} - {targ.handle}
-                    </li>
-                  ))}
-                  {newCampaign.target.length == 0 &&
-                    newCampaign.channel == "Email" &&
-                    "You need to add at least one target!"}
-                </ul>
+                <div style={{margin: "10px 0"}}>
+                  <h3 style={{ margin: 0, fontFamily: "Fjalla One" }}>
+                    Your targets:
+                  </h3>
+                  <ul style={{ margin: 0 }}>
+                    {newCampaign.target.map((targ) => (
+                      <li>
+                        {targ.name} - {targ.handle}
+                      </li>
+                    ))}
+                    {newCampaign.target.length == 0 &&
+                      newCampaign.channel == "Email" &&
+                      "You need to add at least one target!"}
+                  </ul>
+                </div>{" "}
               </div>
             }
+          </div>
+
+          <div
+            style={{ margin: "10px 0",
+              display: newCampaign.channel == "Email" ? "inline-block" : "none",
+            }}
+          >
+            <h3 style={{ margin: 0, fontFamily: "Fjalla One" }}>Add a BCC:</h3>
+            <TextField
+              fullWidth
+              label="And an address to copy in to user's emails"
+              sx={TextFieldStyle}
+              variant="outlined"
+              value={newTarget.name}
+              onChange={(e) =>
+                setNewTarget({ ...newTarget, bcc: e.target.value })
+              }
+            />
           </div>
           <NavButtonBox />
         </>

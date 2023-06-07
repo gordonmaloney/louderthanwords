@@ -21,7 +21,8 @@ import { TabContext, TabList } from "@mui/lab";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
+import { SendModal } from "./SendModal";
+import { ShareDonateModal } from "./ShareDonateModal";
 const TabStyle = {
   fontFamily: "Fjalla One",
   color: "#0D0221",
@@ -69,6 +70,7 @@ export const Campaign = ({ campaign }) => {
     target,
     filter,
     daisychain,
+    bcc,
     performance,
   } = campaign;
 
@@ -209,8 +211,18 @@ export const Campaign = ({ campaign }) => {
     setValue(newValue);
   };
 
+  //modals
+  const [isSendOpen, setIsSendOpen] = useState(false);
+  const onSendClose = () => {
+    setIsSendOpen(false);
+  };
+  const [isShareOpen, setIsShareOpen] = useState(false);
+  const onShareClose = () => {
+    setIsShareOpen(false);
+  };
+
   //send function
-  const handleSend = () => {
+  const handleSend = (prop) => {
     //check for channel, compile everything
 
     if (channel == "Twitter") {
@@ -220,15 +232,28 @@ export const Campaign = ({ campaign }) => {
 
       window.open(sendLink);
     }
-    if (channel == "Email") {
+    if (channel == "Email" && prop !== "gmail") {
       let sendLink = `mailto:${target.map(
         (targ) => targ.handle + `,`
-      )}?subject=${subject}&body=${
+      )}?subject=${subject}&bcc=${bcc}&body=${
         newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
       }`;
 
       window.open(sendLink);
     }
+
+    if (channel == "Email" && prop == "gmail") {
+      let sendLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${target.map(
+        (targ) => targ.handle + `,`
+      )}?su=${subject}&bcc=${bcc}&body=${
+        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+      }`;
+
+      window.open(sendLink);
+    }
+
+    onSendClose();
+    setIsShareOpen(true);
   };
 
   const NavButtonBox = ({ nextDisabled, send }) => {
@@ -270,7 +295,7 @@ export const Campaign = ({ campaign }) => {
           <Button
             disabled={nextDisabled}
             variant="outlined"
-            onClick={() => handleSend()}
+            onClick={() => setIsSendOpen(true)}
             sx={{
               ...BtnStyle,
               float: "right",
@@ -476,73 +501,67 @@ export const Campaign = ({ campaign }) => {
           />
         )}
       </div>
+
+      <SendModal
+        isOpen={isSendOpen}
+        onClose={() => onSendClose()}
+        body={
+          <p>
+            You're almost there. Press the button below to open your{" "}
+            {channel == "Email" ? "email" : "Twitter"} client, and the message
+            will be pre-filled in there for you. Then just hit send in there to
+            fire it off.
+            <br />{" "}
+            <center>
+              <Button
+                onClick={() => handleSend()}
+                style={{ ...BtnStyle, marginTop: "5px" }}
+              >
+                Send {channel == "Email" ? "email" : "tweet"}
+              </Button>
+            </center>
+            {!Mobile && channel == "Email" && (
+              <>
+                <br />
+                <br />
+                If you use Gmail, you can use this button to send the message
+                from your browser:
+                <br />
+                <center>
+                  <Button
+                    onClick={() => handleSend("gmail")}
+                    style={{ ...BtnStyle, marginTop: "5px" }}
+                  >
+                    Send via Gmail
+                  </Button>
+                </center>
+              </>
+            )}
+          </p>
+        }
+      />
+
+      <ShareDonateModal
+        isOpen={isShareOpen}
+        onClose={() => onShareClose()}
+        body={
+          <p>
+            Nice one! But you can have even more impact by doing just one more
+            thing - either <b>share</b> the campaign, or <b>donate</b> to help
+            keep Louder Than Words running. <b>Will you do one of those?</b>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-around",
+                marginTop: "15px",
+              }}
+            >
+              <Button style={BtnStyle}>Share</Button>
+              <Button style={BtnStyle}>Donate</Button>
+            </div>
+          </p>
+        }
+      />
     </Box>
   );
 };
-
-{
-  ///
-  // return (
-  //   <div>
-  //     Campaign: {title}
-  //     <br />
-  //     Host: {host}
-  //     <br />
-  //     {stage == "prompts" && (
-  //       //work out how conditionals can work here
-  //       <>
-  //         {prompts.map((prompt) => {
-  //           return (
-  //             <div>
-  //               {prompt.question} {prompt.required && "*"}
-  //               <br />
-  //               {
-  //                 //textfield for text type questions
-  //                 prompt.answerType == "text" && (
-  //                   <TextField
-  //                     required={prompt.required}
-  //                     onChange={(e) => handlePromptAnswerChange(e, prompt)}
-  //                   />
-  //                 )
-  //               }
-  //               {
-  //                 //select field for yes/no questions
-  //                 prompt.answerType == "yesno" && (
-  //                   <FormControl>
-  //                     <Select
-  //                       width="200px"
-  //                       labelId="yes-no-select-label"
-  //                       id="yes-no-select"
-  //                       value={promptAnswers[prompt.id]}
-  //                       onChange={(e) => handlePromptAnswerChange(e, prompt)}
-  //                     >
-  //                       <MenuItem value=""></MenuItem>
-  //                       <MenuItem value={true}>Yes</MenuItem>
-  //                       <MenuItem value={false}>No</MenuItem>
-  //                     </Select>
-  //                   </FormControl>
-  //                 )
-  //               }
-  //             </div>
-  //           );
-  //         })}
-  //         <Button onClick={() => setStage("message")}>Next</Button>
-  //       </>
-  //     )}
-  //     {stage == "message" && (
-  //       <TextField
-  //         id="template"
-  //         fullWidth
-  //         value={newTemplate}
-  //         multiline
-  //         rows={10}
-  //         onChange={(e) => setNewTemplate(e.target.value)}
-  //       />
-  //     )}
-  //     {filter == "postcode" && (
-  //       <PostcodeInput setActionTarget={setActionTarget} campaign={campaign} />
-  //     )}
-  //     <br />
-  //   </div>
-  // );
-}

@@ -56,7 +56,9 @@ export const Campaigns = [
       "Jacob Rees-Mogg is a dinosaur. Tell him to get back to the museum where he belongs!",
     channel: "Email",
     host: "Moggasaurus",
+    hostLink: "http://moggasaurus.com",
     subject: "You fossil!",
+    bcc: "gordonmaloney@gmail.com",
     template:
       "My favourite dinosaur is a <<dinosaur>>. But that's because they don't impose their paleolithic views on anyone!",
     title: "Send Jacob Rees-Mogg back to the museum where he belongs!",
