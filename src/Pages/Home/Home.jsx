@@ -93,8 +93,7 @@ export const Home = () => {
                   letter campaigns, engage your members, and create a voice that
                   cannot be ignored.
                 </p>
-                <br />
-                <img src={WomanPhone} width="70%" height="auto" />
+                <img src={WomanPhone} width={Mobile ? "100%" : "75%"} height="auto" />
               </center>
             </Grid>
           </Grid>

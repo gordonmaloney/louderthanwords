@@ -8,7 +8,7 @@ import { Paper, Button } from "@mui/material";
 export const CampaignCarousel = () => {
   {
     return (
-      <Carousel interval="4000"> 
+      <Carousel interval="4000" navButtonsAlwaysVisible>
         {Campaigns.map((item, i) => (
           <Item key={i} item={item} />
         ))}
@@ -19,11 +19,11 @@ export const CampaignCarousel = () => {
 
 function Item({ item }) {
   return (
-      <CampaignBox
-        host={item.host}
-        title={item.title}
-        body={item.blurb}
-        link={`/${item.id}`}
-      />
+    <CampaignBox
+      host={item.host}
+      title={item.title}
+      body={item.blurb}
+      link={`/${item.id}`}
+    />
   );
 }

@@ -2,6 +2,9 @@ import React from "react";
 import { Modal, Button, Box } from "@mui/material";
 import { BtnStyle } from "../../MUIStyles";
 
+
+import CloseIcon from '@mui/icons-material/Close';
+
 const ModalStyle = {
   position: "absolute",
   top: "50%",
@@ -21,9 +24,16 @@ export const ReviewModal = ({ body, isOpen, onClose }) => {
   return (
     <Modal open={isOpen} onClose={onClose}>
       <Box style={ModalStyle}>
+
+      <span style={{float: "right", cursor: 'pointer'}}
+      onClick={onClose}
+      ><CloseIcon fontSize="large" /></span>
+
         <h1 style={{ fontFamily: "Fjalla One", margin: "0 0 12px 0" }}>
           Previewing...
         </h1>
+
+        
         {body}
         <center>
           <Button

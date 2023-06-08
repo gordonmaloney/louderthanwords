@@ -27,7 +27,7 @@ export const Footer = () => {
           <br />
           <Link to="/donationpolicy">Donation Policy</Link>
           <br />
-          Contact Us
+          <Link to="/contact">Contact Us</Link>
           <br />© 2023 Louder Than Words. All rights reserved.
         </Grid>
 

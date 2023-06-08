@@ -17,6 +17,11 @@ import { CampaignFrame } from "./Pages/Campaign/CampaignFrame";
 import { DonationPolicy } from "./Pages/Misc/DonationPolicy";
 import { ViewCampaigns } from "./Pages/Misc/ViewCampaigns";
 
+import { Donate } from "./Pages/Misc/Donate";
+import { Contact } from "./Pages/Misc/Contact";
+import { FAQ } from "./Pages/Misc/FAQ";
+import { RunCampaign } from "./Pages/Misc/RunCampaign";
+
 const App = () => {
   return (
     <div className="pageContainer">
@@ -25,7 +30,13 @@ const App = () => {
 
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" exact element={<Home />} />
+
+          <Route path="/contact" exact element={<Contact />} />
+          <Route path="/donate" exact element={<Donate />} />
+          <Route path="/faq" exact element={<FAQ />} />
+          <Route path="/runcampaign" exact element={<RunCampaign />} />
+
           <Route path="/create" exact element={<Create />} />
           <Route path="/donationpolicy" exact element={<DonationPolicy />} />
           <Route path="/privacypolicy" exact element={<PrivacyPolicy />} />

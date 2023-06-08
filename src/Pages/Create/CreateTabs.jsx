@@ -5,11 +5,12 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import {
   TextField,
-  FormControl,
+  FormControlLabel,
   InputLabel,
   Select,
   Grid,
   MenuItem,
+  Checkbox,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { TabBody } from "../../Components/TabBody";
@@ -32,8 +33,14 @@ const TabStyle = {
     cursor: "pointer",
     opacity: "1",
   },
+  "&:disabled": { color: "rgba(13, 2, 33,0.3) !important" },
   "&:active": { borderRadius: 0, backgroundColor: "#FFF1D0", color: "#5A788B" },
 };
+
+const CheckboxStyle = {
+  color: "#5A788B",
+
+}
 
 const TextFieldStyle = {
   marginTop: "8px",
@@ -95,6 +102,7 @@ export const CreateTabs = () => {
   const [newPrompt, setNewPrompt] = useState({
     question: "",
     answerType: "",
+    required: false,
     id: "",
   });
 
@@ -147,6 +155,7 @@ export const CreateTabs = () => {
             </span>
             <TextField
               fullWidth
+              required
               id="campaignTitle"
               label="Campaign Title"
               variant="outlined"
@@ -167,6 +176,7 @@ export const CreateTabs = () => {
               <TextField
                 id="campaignHost"
                 label="Host"
+                required
                 variant="outlined"
                 sx={{ ...TextFieldStyle, width: "49%" }}
                 value={newCampaign.host}
@@ -179,7 +189,7 @@ export const CreateTabs = () => {
                 label="Link to web or socials"
                 variant="outlined"
                 sx={{ ...TextFieldStyle, width: "49%" }}
-                value={newCampaign.host}
+                value={newCampaign.hostLink}
                 onChange={(e) =>
                   setNewCampaign({ ...newCampaign, hostLink: e.target.value })
                 }
@@ -241,7 +251,12 @@ export const CreateTabs = () => {
             </TextField>
           </div>
 
-          <div style={{ margin: "10px 0", display: newCampaign.channel == "Select" && "none" }}>
+          <div
+            style={{
+              margin: "10px 0",
+              display: newCampaign.channel == "Select" && "none",
+            }}
+          >
             <div>
               <span style={{ fontFamily: "Fjalla One" }}>
                 Who or what is the target of the campaign?
@@ -300,7 +315,7 @@ export const CreateTabs = () => {
                     "none",
                 }}
               >
-                <div style={{margin: "10px 0"}}>
+                <div style={{ margin: "10px 0" }}>
                   <h3 style={{ margin: 0, fontFamily: "Fjalla One" }}>
                     Your targets:
                   </h3>
@@ -320,7 +335,8 @@ export const CreateTabs = () => {
           </div>
 
           <div
-            style={{ margin: "10px 0",
+            style={{
+              margin: "10px 0",
               display: newCampaign.channel == "Email" ? "inline-block" : "none",
             }}
           >
@@ -336,7 +352,12 @@ export const CreateTabs = () => {
               }
             />
           </div>
-          <NavButtonBox />
+          <NavButtonBox
+            nextDisabled={
+              newCampaign.channel == "Select" ||
+              (newCampaign.channel == "Email" && newCampaign.target.length == 0)
+            }
+          />
         </>
       }
     />
@@ -405,7 +426,6 @@ export const CreateTabs = () => {
                   You can choose whether the response should be free text or a
                   yes/no:
                 </span>
-
                 <TextField
                   fullWidth
                   sx={TextFieldStyle}
@@ -428,6 +448,18 @@ export const CreateTabs = () => {
 
                   <MenuItem value="yesno">Yes/no</MenuItem>
                 </TextField>
+                <FormControlLabel
+                  label="Required"
+                  control={
+                    <Checkbox
+                    style={CheckboxStyle}
+                      checked={newPrompt.required}
+                      onChange={(e) =>
+                        setNewPrompt({ ...newPrompt, required: e.target.checked })
+                      }
+                    />
+                  }
+                />{" "}
               </div>
 
               <div style={{ marginBottom: "12px" }}>
@@ -814,6 +846,8 @@ export const CreateTabs = () => {
     },
   ];
 
+  const [tourRunning, setTourRunning] = useState(false);
+
   function TourButton() {
     const tour = useContext(ShepherdTourContext);
     const firstTime = window.localStorage.getItem("firstTime");
@@ -821,8 +855,10 @@ export const CreateTabs = () => {
     console.log(firstTime);
 
     useEffect(() => {
-      if (firstTime == null) {
+      if (firstTime == null && !tourRunning) {
+        window.localStorage.setItem("firstTime", false);
         tour.start();
+        setTourRunning(true);
       }
     }, []);
 
@@ -891,20 +927,47 @@ export const CreateTabs = () => {
                 sx={TabStyle}
                 value={0}
               />
-              <Tab className="target" label="Target" sx={TabStyle} value={1} />
+              <Tab
+                disabled={!newCampaign.title || !newCampaign.host}
+                className="target"
+                label="Target"
+                sx={TabStyle}
+                value={1}
+              />
               <Tab
                 className="prompts"
                 label="Prompts"
                 sx={TabStyle}
                 value={2}
+                disabled={
+                  !newCampaign.title ||
+                  !newCampaign.host ||
+                  newCampaign.channel == "Select" ||
+                  (newCampaign.channel == "Email" &&
+                    newCampaign.target.length == 0)
+                }
               />
               <Tab
+                disabled={
+                  !newCampaign.title ||
+                  !newCampaign.host ||
+                  newCampaign.channel == "Select" ||
+                  (newCampaign.channel == "Email" &&
+                    newCampaign.target.length == 0)
+                }
                 className="template"
                 label="Template"
                 sx={TabStyle}
                 value={3}
               />
               <Tab
+                disabled={
+                  !newCampaign.title ||
+                  !newCampaign.host ||
+                  newCampaign.channel == "Select" ||
+                  (newCampaign.channel == "Email" &&
+                    newCampaign.target.length == 0)
+                }
                 className="review"
                 label="Review & Launch"
                 sx={TabStyle}

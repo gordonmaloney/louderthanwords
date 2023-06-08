@@ -11,7 +11,7 @@ export const HomeCarousel = () => {
       {
         name: "Mobilise your supporters",
         description:
-          "Louder Than Words is a tool for running campaigs to demand action - create a template message for email or Twitter and mobilise supporters to send it en masse",
+          "Louder Than Words is a tool for running campaigns to demand action - create a template message for email or Twitter and mobilise supporters to send it en masse",
         imgSrc: Carousel1,
       },
       {
@@ -30,7 +30,9 @@ export const HomeCarousel = () => {
 
     return (
       <center>
-        <Carousel height={"95vh"} width={"100vw"} interval="8000">
+        <Carousel 
+        navButtonsAlwaysVisible
+        height={"95vh"} width={"100vw"} interval="8000">
           {items.map((item, i) => (
             <Item key={i} item={item} />
           ))}
@@ -44,10 +46,10 @@ function Item(props) {
   return (
     <Paper
       sx={{
-        height: "98%",
+        height: "100%",
         width: "100vw",
         paddingTop: "50px",
-
+        margin: "0 auto",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -57,7 +59,7 @@ function Item(props) {
         style={{
           width: "100%",
           height: "100%",
-          marginLeft: '-5px',
+          marginLeft: '0px',
           zIndex: 1,
           background: `url(${props.item.imgSrc})`,
           backgroundSize: "cover",

@@ -40,11 +40,13 @@ export const Campaigns = [
         question: "Have you been a LandlordInc tenant yourself?",
         answerType: "yesno",
         id: "tenant",
+        required: true
       },
       {
         question: "Say in your own words why you care about this:",
         answerType: "text",
         id: "whymatter",
+        required: false
       },
     ],
   },
@@ -68,6 +70,7 @@ export const Campaigns = [
         question: "What's your favourite dinosaur?",
         answerType: "text",
         id: "dinosaur",
+        required: true
       }
     ],
   },

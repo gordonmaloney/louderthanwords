@@ -70,7 +70,15 @@ export const Header = () => {
             <Link to="/campaigns">VIEW CAMPAIGNS ·</Link>
             <br />
             <Link to="/partner">PARTNER WITH US ·</Link> <br />
-            GET IN TOUCH ·
+
+
+            <Link to="/runcampaign">CAMPAIGN TOP TIPS ·</Link> <br />
+
+            <Link to="/faq">FAQs ·</Link> <br />
+
+            <Link to="/contact">GET IN TOUCH ·</Link> <br />
+
+
           </p>
         </Box>
       </Drawer>

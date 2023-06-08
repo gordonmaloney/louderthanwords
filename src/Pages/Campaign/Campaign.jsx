@@ -88,12 +88,14 @@ export const Campaign = ({ campaign }) => {
   const initialisePrompts = () => {
     let newPrompts = {};
     prompts.map((prompt) => {
-      newPrompts[prompt.id] = "";
+      if (prompt.answerType == "test") newPrompts[prompt.id] = "";
+      if (prompt.answerType == "yesno")
+        newPrompts[prompt.id] = "noOptionSelected";
     });
     setPromptAnswers(newPrompts);
   };
 
-  console.log(promptAnswers);
+  console.log(promptAnswers["tenant"]);
 
   useEffect(() => {
     initialisePrompts();
@@ -102,9 +104,15 @@ export const Campaign = ({ campaign }) => {
   const [newTemplate, setNewTemplate] = useState();
 
   const addPrompt = (prompt) => {
-    setNewTemplate((old) =>
-      old.replace(`<<${prompt.id}>>`, promptAnswers[prompt.id])
-    );
+    if (promptAnswers[prompt.id] !== undefined) {
+      setNewTemplate((old) =>
+        old.replace(`<<${prompt.id}>>`, promptAnswers[prompt.id])
+      );
+    } else {
+      setNewTemplate((old) =>
+        old.replace(`<<${prompt.id}>>`, '')
+      );
+    }
   };
 
   const addCondition = (prompt) => {
@@ -398,7 +406,21 @@ export const Campaign = ({ campaign }) => {
             orientation={Mobile ? "horizontal" : "vertical"}
           >
             {activeTabs.map((tab, index) => (
-              <Tab label={tab} sx={TabStyle} value={index} />
+              <Tab
+                label={tab}
+                sx={TabStyle}
+                value={index}
+                disabled={
+                  tab == "Your Message" &&
+                  prompts
+                    .filter((prompt) => prompt.required)
+                    .filter(
+                      (prompt) =>
+                        promptAnswers[prompt.id] == "" ||
+                        promptAnswers[prompt.id] == "noOptionSelected"
+                    ).length > 0
+                }
+              />
             ))}
           </TabList>
         </Box>
@@ -431,10 +453,11 @@ export const Campaign = ({ campaign }) => {
                         //textfield for text type questions
                         prompt.answerType == "text" && (
                           <TextField
+                            placeholder="Your answer here..."
                             sx={TextFieldStyle}
                             fullWidth
                             value={promptAnswers[prompt.id]}
-                            required={prompt.required}
+                            required
                             onChange={(e) =>
                               handlePromptAnswerChange(e, prompt)
                             }
@@ -448,14 +471,15 @@ export const Campaign = ({ campaign }) => {
                             select
                             fullWidth
                             sx={TextFieldStyle}
-                            labelId="yes-no-select-label"
                             id="yes-no-select"
                             value={promptAnswers[prompt.id]}
                             onChange={(e) =>
                               handlePromptAnswerChange(e, prompt)
                             }
                           >
-                            <MenuItem value=""></MenuItem>
+                            <MenuItem value="noOptionSelected">
+                              Select...
+                            </MenuItem>
                             <MenuItem value={true}>Yes</MenuItem>
                             <MenuItem value={false}>No</MenuItem>
                           </TextField>
@@ -464,7 +488,17 @@ export const Campaign = ({ campaign }) => {
                     </div>
                   );
                 })}
-                <NavButtonBox />
+                <NavButtonBox
+                  nextDisabled={
+                    prompts
+                      .filter((prompt) => prompt.required)
+                      .filter(
+                        (prompt) =>
+                          promptAnswers[prompt.id] == "" ||
+                          promptAnswers[prompt.id] == "noOptionSelected"
+                      ).length > 0
+                  }
+                />
               </>
             }
           />
