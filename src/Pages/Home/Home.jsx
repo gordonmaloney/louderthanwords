@@ -13,6 +13,8 @@ import { CampaignCarousel } from "./CampaignCarousel";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const Home = () => {
+  const Small = useMediaQuery("(max-width:600px)");
+
   const Mobile = useMediaQuery("(max-width:900px)");
 
   return (
@@ -109,6 +111,7 @@ export const Home = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
+                marginBottom: !Small ? "150px" : ""
               }}
             >
               <p

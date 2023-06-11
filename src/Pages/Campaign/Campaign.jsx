@@ -23,6 +23,10 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { SendModal } from "./SendModal";
 import { ShareDonateModal } from "./ShareDonateModal";
+
+import { regions, msps } from "../../Data/MSPData";
+import { MPs } from '../../Data/MPs'
+
 const TabStyle = {
   fontFamily: "Fjalla One",
   color: "#0D0221",
@@ -60,7 +64,7 @@ export const Campaign = ({ campaign }) => {
   const Mobile = useMediaQuery("(max-width:900px)");
 
   const {
-    id,
+    uuid,
     channel,
     title,
     host,
@@ -69,13 +73,19 @@ export const Campaign = ({ campaign }) => {
     template,
     target,
     filter,
+    bulkTarget,
     daisychain,
     bcc,
     performance,
   } = campaign;
 
+  const [newSubject, setNewSubject] = useState(subject);
+
   //initialise action target
   const [actionTarget, setActionTarget] = useState("");
+
+
+  console.log(MPs.filter(mp => mp.constituency == "West Tyrone"))
 
   //if no filter, set target
   if (filter == "none" && actionTarget !== target) {
@@ -109,9 +119,7 @@ export const Campaign = ({ campaign }) => {
         old.replace(`<<${prompt.id}>>`, promptAnswers[prompt.id])
       );
     } else {
-      setNewTemplate((old) =>
-        old.replace(`<<${prompt.id}>>`, '')
-      );
+      setNewTemplate((old) => old.replace(`<<${prompt.id}>>`, ""));
     }
   };
 
@@ -240,10 +248,11 @@ export const Campaign = ({ campaign }) => {
 
       window.open(sendLink);
     }
-    if (channel == "Email" && prop !== "gmail") {
+
+    if (channel == "Email" && prop !== "gmail" && prop !== "yahoo") {
       let sendLink = `mailto:${target.map(
         (targ) => targ.handle + `,`
-      )}?subject=${subject}&bcc=${bcc}&body=${
+      )}?subject=${newSubject}&bcc=${bcc ? bcc : ""}&body=${
         newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
       }`;
 
@@ -253,10 +262,18 @@ export const Campaign = ({ campaign }) => {
     if (channel == "Email" && prop == "gmail") {
       let sendLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${target.map(
         (targ) => targ.handle + `,`
-      )}?su=${subject}&bcc=${bcc}&body=${
+      )}&su=${newSubject}&bcc=${bcc ? bcc : ""}&body=${
         newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
       }`;
+      window.open(sendLink);
+    }
 
+    if (channel == "Email" && prop == "yahoo") {
+      let sendLink = `http://compose.mail.yahoo.com/?To=${target.map(
+        (targ) => targ.handle + `,`
+      )}&Subject=${newSubject}&bcc=${bcc ? bcc : ""}&Body=${
+        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+      }`;
       window.open(sendLink);
     }
 
@@ -359,10 +376,64 @@ export const Campaign = ({ campaign }) => {
   }, []);
 
   useEffect(() => {
-    if (campaign.target.length < 2) {
+    if (campaign.bulkTarget == "select") {
       setActiveTabs((old) => old.filter((tab) => tab !== "Set Target"));
     }
   }, []);
+
+  const [postcode, setPostcode] = useState("");
+  const [invalidPC, setInvalidPC] = useState(false);
+  const [scotConstituency, setScotConstituency] = useState("");
+  const [constituency, setConstituency] = useState("");
+  const [searching, setSearching] = useState(false);
+
+  const fetchPostcodeData = async () => {
+    setSearching(true);
+    try {
+      const scotland_response = await fetch(
+        `https://api.postcodes.io/scotland/postcodes/${postcode}`
+      );
+
+      const uk_response = await fetch(
+        `https://api.postcodes.io/postcodes/${postcode}`
+      );
+
+      const scotland_data = await scotland_response.json();
+      const uk_data = await uk_response.json();
+      setConstituency(uk_data.result.parliamentary_constituency);
+      setScotConstituency(
+        scotland_data.result.scottish_parliamentary_constituency
+      );
+      setSearching(false);
+    } catch {
+      setInvalidPC(true);
+      console.log("invalid postcode");
+      setSearching(false);
+    }
+  };
+
+  const [fetchedTargets, setFetchedTargets] = useState([]);
+
+  useEffect(() => {
+    //find region
+    if (scotConstituency) {
+      let region = regions.filter(
+        (region) => region.constituency == scotConstituency
+      )[0].region;
+
+      //set msps that match either constituency or region
+      setFetchedTargets(
+        msps.filter(
+          (msp) =>
+            msp.constituency == constituency || msp.constituency == region
+        )
+      );
+    }
+  }, [scotConstituency]);
+
+  useEffect(() => {
+    setFetchedTargets(MPs.filter((mp) => mp.constituency == constituency));
+  }, [constituency]);
 
   //return loading screen if campaign not loaded
   if (!campaign) {
@@ -412,13 +483,15 @@ export const Campaign = ({ campaign }) => {
                 value={index}
                 disabled={
                   tab == "Your Message" &&
-                  prompts
+                  (prompts
                     .filter((prompt) => prompt.required)
                     .filter(
                       (prompt) =>
                         promptAnswers[prompt.id] == "" ||
                         promptAnswers[prompt.id] == "noOptionSelected"
-                    ).length > 0
+                    ).length > 0 ||
+                    (campaign.bulkTarget == "msps" && !scotConstituency) ||
+                    (campaign.bulkTarget == "mps" && !constituency))
                 }
               />
             ))}
@@ -435,6 +508,56 @@ export const Campaign = ({ campaign }) => {
                 <Button sx={BtnStyle} fullWidth onClick={() => setValue(1)}>
                   GET STARTED
                 </Button>
+              </>
+            }
+          />
+        )}
+        {value === activeTabs.indexOf("Set Target") && (
+          <TabBody
+            title={"Set target"}
+            body={
+              <>
+                <div>
+                  <span style={{ fontFamily: "Fjalla One" }}>
+                    Enter your postcode to find your representatives:
+                  </span>
+                  <TextField
+                    label="Your postcode"
+                    style={{ ...TextFieldStyle, margin: "10px 0" }}
+                    fullWidth
+                    value={postcode}
+                    onChange={(e) => setPostcode(e.target.value)}
+                  />
+                  <center>
+                    <Button
+                      style={BtnStyle}
+                      onClick={() => fetchPostcodeData()}
+                    >
+                      Find my reps
+                    </Button>
+                  </center>
+                </div>
+
+                {searching && "Loading..."}
+                <div>
+                  {!searching && bulkTarget == "msps" && scotConstituency && (
+                    <>
+                      Your constituency is <u>{scotConstituency}</u>.
+                    </>
+                  )}
+                  {!searching && bulkTarget == "mps" && constituency && (
+                    <>
+                      Your constituency is <u>{constituency}</u>.
+                    </>
+                  )}
+                </div>
+
+                <NavButtonBox
+                  nextDisabled={
+                    (bulkTarget == "msps" && !scotConstituency) ||
+                    (bulkTarget == "mps" && !constituency)
+                  }
+                />
               </>
             }
           />
@@ -509,14 +632,25 @@ export const Campaign = ({ campaign }) => {
             body={
               <>
                 {channel == "Email" && (
-                  <TextField
-                    label="Subject Line"
-                    id="subject"
-                    fullWidth
-                    value={subject}
-                    sx={TextFieldStyle}
-                    onChange={(e) => setNewTemplate(e.target.value)}
-                  />
+                  <>
+                    <TextField
+                      label="To:"
+                      id="subject"
+                      fullWidth
+                      value={fetchedTargets.map((targ) => " " + targ.name + " - " + targ.party)}
+                      sx={TextFieldStyle}
+                      disabled
+                    />
+
+                    <TextField
+                      label="Subject Line"
+                      id="subject"
+                      fullWidth
+                      value={newSubject}
+                      sx={TextFieldStyle}
+                      onChange={(e) => setNewSubject(e.target.value)}
+                    />
+                  </>
                 )}
 
                 <TextField
@@ -558,17 +692,25 @@ export const Campaign = ({ campaign }) => {
               <>
                 <br />
                 <br />
-                If you use Gmail, you can use this button to send the message
-                from your browser:
+                If you use Gmail or Yahoo Mail, you can use these button to send
+                the message from your browser:
                 <br />
-                <center>
+                <div
+                  style={{ display: "flex", justifyContent: "space-around" }}
+                >
                   <Button
                     onClick={() => handleSend("gmail")}
                     style={{ ...BtnStyle, marginTop: "5px" }}
                   >
                     Send via Gmail
                   </Button>
-                </center>
+                  <Button
+                    onClick={() => handleSend("yahoo")}
+                    style={{ ...BtnStyle, marginTop: "5px" }}
+                  >
+                    Send via Yahoo
+                  </Button>
+                </div>{" "}
               </>
             )}
           </p>
@@ -578,23 +720,7 @@ export const Campaign = ({ campaign }) => {
       <ShareDonateModal
         isOpen={isShareOpen}
         onClose={() => onShareClose()}
-        body={
-          <p>
-            Nice one! But you can have even more impact by doing just one more
-            thing - either <b>share</b> the campaign, or <b>donate</b> to help
-            keep Louder Than Words running. <b>Will you do one of those?</b>
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-around",
-                marginTop: "15px",
-              }}
-            >
-              <Button style={BtnStyle}>Share</Button>
-              <Button style={BtnStyle}>Donate</Button>
-            </div>
-          </p>
-        }
+        campaign={campaign}
       />
     </Box>
   );

@@ -8,8 +8,10 @@ import {
   FormControlLabel,
   InputLabel,
   Select,
+  Tooltip,
   Grid,
   MenuItem,
+  InputAdornment,
   Checkbox,
 } from "@mui/material";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
@@ -21,6 +23,18 @@ import { ReviewModal } from "./ReviewModal";
 import { ShepherdTour, ShepherdTourContext } from "react-shepherd";
 import { tourOptions } from "./Tour";
 import useMediaQuery from "@mui/material/useMediaQuery";
+
+const TooltipStyle = {
+  tooltip: {
+    sx: {
+      color: "rgb(255, 241, 208)",
+      bgcolor: "#5A788B",
+      "& .MuiTooltip-arrow": {
+        color: "#5A788B",
+      },
+    },
+  },
+};
 
 const TabStyle = {
   fontFamily: "Fjalla One",
@@ -39,8 +53,7 @@ const TabStyle = {
 
 const CheckboxStyle = {
   color: "#5A788B",
-
-}
+};
 
 const TextFieldStyle = {
   marginTop: "8px",
@@ -80,6 +93,7 @@ export const CreateTabs = () => {
     channel: "Select",
     prompts: [],
     template: "",
+    bulkTarget: "select"
   });
 
   const [optionalFields, setOptionalFields] = useState({ prompts: false });
@@ -91,6 +105,7 @@ export const CreateTabs = () => {
   };
 
   const [addingTarget, setAddingTarget] = useState(false);
+  const [editingTarget, setEditingTarget] = useState(false);
   const [newTarget, setNewTarget] = useState({
     name: "",
     handle: "",
@@ -99,6 +114,7 @@ export const CreateTabs = () => {
   const [addingBCC, setAddingBCC] = useState(false);
 
   const [addingPrompt, setAddingPrompt] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState(false);
   const [newPrompt, setNewPrompt] = useState({
     question: "",
     answerType: "",
@@ -224,6 +240,13 @@ export const CreateTabs = () => {
     />
   );
 
+  //set uuid based on title
+  useEffect(() => {
+    let newId = newCampaign.title.replaceAll(" ", "-");
+    setNewCampaign({ ...newCampaign, uuid: newId });
+  }, [newCampaign.title]);
+
+
   const TargetTab = (
     <TabBody
       index={1}
@@ -256,7 +279,20 @@ export const CreateTabs = () => {
               margin: "10px 0",
               display: newCampaign.channel == "Select" && "none",
             }}
+
           >
+            <TextField
+              fullWidth
+              value={newCampaign.bulkTarget}
+              select
+              style={{ TextFieldStyle }}
+              onChange={(e) => {setNewCampaign({...newCampaign, bulkTarget: e.target.value})}}
+            >
+              <MenuItem value="select">Select...</MenuItem>
+              <MenuItem value="msps">Members of Parliament</MenuItem>
+              <MenuItem value="mps">Members of the Scottish Parliament</MenuItem>
+            </TextField>
+
             <div>
               <span style={{ fontFamily: "Fjalla One" }}>
                 Who or what is the target of the campaign?
@@ -299,9 +335,11 @@ export const CreateTabs = () => {
                     target: [...newCampaign.target, newTarget],
                   });
                   setNewTarget({ name: "", handle: "" });
+                  setEditingTarget(false);
                 }}
+                disabled={newTarget.name == "" || newTarget.handle == ""}
               >
-                Add
+                {editingTarget ? "Save" : "Add"}
               </Button>
             </div>
 
@@ -322,7 +360,24 @@ export const CreateTabs = () => {
                   <ul style={{ margin: 0 }}>
                     {newCampaign.target.map((targ) => (
                       <li>
-                        {targ.name} - {targ.handle}
+                        {targ.name} - {targ.handle}{" "}
+                        <Button
+                          style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                          onClick={() => {
+                            setNewTarget(targ);
+                            setEditingTarget(true);
+                            setNewCampaign({
+                              ...newCampaign,
+                              target: [
+                                ...newCampaign.target.filter(
+                                  (existingTarg) => existingTarg !== targ
+                                ),
+                              ],
+                            });
+                          }}
+                        >
+                          Edit
+                        </Button>
                       </li>
                     ))}
                     {newCampaign.target.length == 0 &&
@@ -346,7 +401,7 @@ export const CreateTabs = () => {
               label="And an address to copy in to user's emails"
               sx={TextFieldStyle}
               variant="outlined"
-              value={newTarget.name}
+              value={newTarget.bcc}
               onChange={(e) =>
                 setNewTarget({ ...newTarget, bcc: e.target.value })
               }
@@ -390,11 +445,28 @@ export const CreateTabs = () => {
           <ul style={{ margin: "0 0 12px 0" }}>
             {newCampaign.prompts.map((prompt) => (
               <li>
-                {prompt.id}: {prompt.question}
+                {prompt.id}: {prompt.question}{" "}
+                <Button
+                  style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                  onClick={() => {
+                    setEditingPrompt(true);
+                    setNewPrompt(prompt);
+                    setNewCampaign({
+                      ...newCampaign,
+                      prompts: [
+                        ...newCampaign.prompts.filter(
+                          (existingPrompt) => existingPrompt !== prompt
+                        ),
+                      ],
+                    });
+                  }}
+                >
+                  Edit
+                </Button>
               </li>
             ))}
           </ul>
-          {!addingPrompt ? (
+          {!addingPrompt && !editingPrompt ? (
             <Button
               sx={BtnStyle}
               variant="contained"
@@ -452,10 +524,13 @@ export const CreateTabs = () => {
                   label="Required"
                   control={
                     <Checkbox
-                    style={CheckboxStyle}
+                      style={CheckboxStyle}
                       checked={newPrompt.required}
                       onChange={(e) =>
-                        setNewPrompt({ ...newPrompt, required: e.target.checked })
+                        setNewPrompt({
+                          ...newPrompt,
+                          required: e.target.checked,
+                        })
                       }
                     />
                   }
@@ -489,6 +564,7 @@ export const CreateTabs = () => {
                   });
                   setNewPrompt({ question: "", answerType: "", id: "" });
                   setAddingPrompt(false);
+                  setEditingPrompt(false);
                 }}
                 disabled={
                   newPrompt.question == "" ||
@@ -496,7 +572,7 @@ export const CreateTabs = () => {
                   newPrompt.id == ""
                 }
               >
-                save
+                Save
               </Button>
             </>
           )}
@@ -621,12 +697,65 @@ export const CreateTabs = () => {
     />
   );
 
+  //tooltip logic
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  useEffect(() => {
+    if (tooltipOpen) {
+      setTimeout(() => {
+        setTooltipOpen(false);
+      }, 1000);
+    }
+  }, [tooltipOpen]);
+
   const ReviewTab = (
     <TabBody
       title="Review & launch"
       body={
         <>
-          <div>
+          <div style={{ marginBottom: "10px" }}>
+            <span style={{ fontFamily: "Fjalla One" }}>
+              Campaign URL:{" "}
+              <Tooltip
+                title="Copied!"
+                componentsProps={TooltipStyle}
+                open={tooltipOpen}
+                disableFocusListener
+                disableHoverListener
+                disableTouchListener
+                placement="right"
+                arrow
+              >
+                <Button
+                  style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                  onClick={() => {
+                    setTooltipOpen(true);
+                    navigator.clipboard.writeText(
+                      window.location.origin + "/" + newCampaign.uuid
+                    );
+                  }}
+                >
+                  Copy
+                </Button>
+              </Tooltip>
+            </span>
+            <TextField
+              style={TextFieldStyle}
+              fullWidth
+              value={newCampaign.uuid}
+              onChange={(e) =>
+                setNewCampaign({ ...newCampaign, uuid: e.target.value })
+              }
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    {window.location.origin + "/"}
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Use the button below to preview what your campaign will look like
               - and take the opportunity to proof-read it!
@@ -642,7 +771,7 @@ export const CreateTabs = () => {
             </center>
           </div>
 
-          <div>
+          <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Once you're happy with everything, use the button below to launch
               your campaign:
@@ -887,13 +1016,16 @@ export const CreateTabs = () => {
           minHeight: "400px",
           marginBottom: "150px",
           position: "relative",
+          marginTop: Mobile && "25px",
         }}
       >
         <div
           style={{
             position: "absolute",
-            bottom: "2px",
-            left: "-7px",
+            bottom: !Mobile && "2px",
+            top: Mobile && "-40px",
+            left: !Mobile && "-7px",
+            right: Mobile && "-7px",
           }}
         >
           <ShepherdTour steps={steps} tourOptions={tourOptions}>

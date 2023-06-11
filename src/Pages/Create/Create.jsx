@@ -13,7 +13,7 @@ export const Create = () => {
         container
         sx={{ width: Mobile ? "100%" : "90%", margin: "0 auto", marginTop: "100px" }}
       >
-        <Grid item xs={12} md={5} sx={{maxWidth: "90%", margin: '0 auto'}}>
+        <Grid item xs={12} md={5} sx={{maxWidth: "90vw !important", margin: '0 auto'}}>
           <h1 style={{ fontFamily: "Fjalla One", margin: "0 0 20px 0" }}>
             Start a campaign
           </h1>

@@ -15,7 +15,7 @@ export const CampaignFrame = () => {
   const { campaignId } = params;
 
   //find campaign from campaigns
-  const campaign = Campaigns.find((campaign) => campaign.id == campaignId);
+  const campaign = Campaigns.find((campaign) => campaign.uuid == campaignId);
 
   return (
     <div style={{ minHeight: "100vh" }}>

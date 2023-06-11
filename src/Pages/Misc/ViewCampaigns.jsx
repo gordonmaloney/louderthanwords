@@ -108,7 +108,7 @@ export const ViewCampaigns = () => {
                         host={item.host}
                         title={item.title}
                         body={item.blurb}
-                        link={`/${item.id}`}
+                        link={`/${item.uuid}`}
                       />
                     </center>
                   </Grid>

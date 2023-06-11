@@ -23,7 +23,7 @@ function Item({ item }) {
       host={item.host}
       title={item.title}
       body={item.blurb}
-      link={`/${item.id}`}
+      link={`/${item.uuid}`}
     />
   );
 }
