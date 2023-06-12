@@ -40,9 +40,20 @@ export const CampaignFrame = () => {
             >
               {campaign.host}
 
-              <Button style={{...BtnStyle, margin: '-15px -22px 0 0', transform: "scale(0.7)", float: 'right'}} href={campaign.hostLink} target="_blank">
-                Visit host
-              </Button>
+              {campaign.hostLink && (
+                <Button
+                  style={{
+                    ...BtnStyle,
+                    margin: "-15px -22px 0 0",
+                    transform: "scale(0.7)",
+                    float: "right",
+                  }}
+                  href={campaign.hostLink}
+                  target="_blank"
+                >
+                  Visit host
+                </Button>
+              )}
             </h3>
 
             <center>

@@ -93,7 +93,7 @@ export const CreateTabs = () => {
     channel: "Select",
     prompts: [],
     template: "",
-    bulkTarget: "select"
+    bulkTarget: "select",
   });
 
   const [optionalFields, setOptionalFields] = useState({ prompts: false });
@@ -246,7 +246,6 @@ export const CreateTabs = () => {
     setNewCampaign({ ...newCampaign, uuid: newId });
   }, [newCampaign.title]);
 
-
   const TargetTab = (
     <TabBody
       index={1}
@@ -279,18 +278,21 @@ export const CreateTabs = () => {
               margin: "10px 0",
               display: newCampaign.channel == "Select" && "none",
             }}
-
           >
             <TextField
               fullWidth
               value={newCampaign.bulkTarget}
               select
               style={{ TextFieldStyle }}
-              onChange={(e) => {setNewCampaign({...newCampaign, bulkTarget: e.target.value})}}
+              onChange={(e) => {
+                setNewCampaign({ ...newCampaign, bulkTarget: e.target.value });
+              }}
             >
               <MenuItem value="select">Select...</MenuItem>
-              <MenuItem value="msps">Members of Parliament</MenuItem>
-              <MenuItem value="mps">Members of the Scottish Parliament</MenuItem>
+              <MenuItem value="mps">Members of Parliament</MenuItem>
+              <MenuItem value="msps">
+                Members of the Scottish Parliament
+              </MenuItem>
             </TextField>
 
             <div>
@@ -378,6 +380,21 @@ export const CreateTabs = () => {
                         >
                           Edit
                         </Button>
+                        <Button
+                          style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                          onClick={() => {
+                            setNewCampaign({
+                              ...newCampaign,
+                              target: [
+                                ...newCampaign.target.filter(
+                                  (existingTarg) => existingTarg !== targ
+                                ),
+                              ],
+                            });
+                          }}
+                        >
+                          Delete
+                        </Button>
                       </li>
                     ))}
                     {newCampaign.target.length == 0 &&
@@ -462,6 +479,21 @@ export const CreateTabs = () => {
                   }}
                 >
                   Edit
+                </Button>
+                <Button
+                  style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                  onClick={() => {
+                    setNewCampaign({
+                      ...newCampaign,
+                      prompts: [
+                        ...newCampaign.prompts.filter(
+                          (existingPrompt) => existingPrompt !== prompt
+                        ),
+                      ],
+                    });
+                  }}
+                >
+                  delete
                 </Button>
               </li>
             ))}
@@ -583,7 +615,7 @@ export const CreateTabs = () => {
   );
 
   useEffect(() => {
-    if (newCampaign.channel == "Email")
+    if (newCampaign.channel == "twitter")
       setNewCampaign({
         ...newCampaign,
         template: "Hey @" + newCampaign.target[0]?.handle + ", ",
@@ -603,6 +635,34 @@ export const CreateTabs = () => {
           </p>
           Your prompts:
           <br />
+          {newCampaign.channel == "Twitter" &&
+            (newCampaign.target.length > 0 ||
+              newCampaign.bulkTarget !== "select") && (
+              <Grid container alignItems="center">
+                <Grid item>
+                  TargetHandle: the twitter username of your target
+                </Grid>
+                <Grid item>
+                  <Button
+                    // size="small"
+                    sx={{
+                      ...BtnStyle,
+                      transform: "scale(0.7)",
+                      width: "100px",
+                      display: "inline !important",
+                    }}
+                    onClick={() =>
+                      setNewCampaign({
+                        ...newCampaign,
+                        template: `${newCampaign.template}<<TargetHandle>>`,
+                      })
+                    }
+                  >
+                    Insert
+                  </Button>
+                </Grid>
+              </Grid>
+            )}
           {newCampaign.prompts.map((prompt) => (
             <Grid container alignItems="center">
               <Grid item>
@@ -980,8 +1040,6 @@ export const CreateTabs = () => {
   function TourButton() {
     const tour = useContext(ShepherdTourContext);
     const firstTime = window.localStorage.getItem("firstTime");
-
-    console.log(firstTime);
 
     useEffect(() => {
       if (firstTime == null && !tourRunning) {

@@ -92,7 +92,7 @@ export const ViewCampaigns = () => {
             </Grid>
             <Grid item lg={8} md={7} sm={12}>
               <Grid container spacing={2} justifyContent={"flex-start"}>
-                {Campaigns.map((item) => (
+                {[...Campaigns].reverse().map((item) => (
                   <Grid
                     item
                     xs={12}

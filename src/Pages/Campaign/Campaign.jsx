@@ -25,7 +25,7 @@ import { SendModal } from "./SendModal";
 import { ShareDonateModal } from "./ShareDonateModal";
 
 import { regions, msps } from "../../Data/MSPData";
-import { MPs } from '../../Data/MPs'
+import { MPs } from "../../Data/MPs";
 
 const TabStyle = {
   fontFamily: "Fjalla One",
@@ -83,9 +83,6 @@ export const Campaign = ({ campaign }) => {
 
   //initialise action target
   const [actionTarget, setActionTarget] = useState("");
-
-
-  console.log(MPs.filter(mp => mp.constituency == "West Tyrone"))
 
   //if no filter, set target
   if (filter == "none" && actionTarget !== target) {
@@ -242,9 +239,9 @@ export const Campaign = ({ campaign }) => {
     //check for channel, compile everything
 
     if (channel == "Twitter") {
-      let sendLink = `https://twitter.com/intent/tweet?text=${newTemplate
-        .replace("#", "%23")
-        .replace(/\n/g, "%0A")}`;
+      let sendLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+        newTemplate.replace("#", "%23").replace(/\n/g, "%0A")
+      )}`;
 
       window.open(sendLink);
     }
@@ -252,8 +249,10 @@ export const Campaign = ({ campaign }) => {
     if (channel == "Email" && prop !== "gmail" && prop !== "yahoo") {
       let sendLink = `mailto:${target.map(
         (targ) => targ.handle + `,`
+      )}${fetchedTargets.map(
+        (targ) => targ.email + `,`
       )}?subject=${newSubject}&bcc=${bcc ? bcc : ""}&body=${
-        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+        encodeURIComponent(newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A")
       }`;
 
       window.open(sendLink);
@@ -262,8 +261,10 @@ export const Campaign = ({ campaign }) => {
     if (channel == "Email" && prop == "gmail") {
       let sendLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${target.map(
         (targ) => targ.handle + `,`
+      )}${fetchedTargets.map(
+        (targ) => targ.email + `,`
       )}&su=${newSubject}&bcc=${bcc ? bcc : ""}&body=${
-        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+        encodeURIComponent(newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A")
       }`;
       window.open(sendLink);
     }
@@ -271,8 +272,10 @@ export const Campaign = ({ campaign }) => {
     if (channel == "Email" && prop == "yahoo") {
       let sendLink = `http://compose.mail.yahoo.com/?To=${target.map(
         (targ) => targ.handle + `,`
+      )}${fetchedTargets.map(
+        (targ) => targ.email + `,`
       )}&Subject=${newSubject}&bcc=${bcc ? bcc : ""}&Body=${
-        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+        encodeURIComponent(newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A")
       }`;
       window.open(sendLink);
     }
@@ -405,6 +408,7 @@ export const Campaign = ({ campaign }) => {
         scotland_data.result.scottish_parliamentary_constituency
       );
       setSearching(false);
+      setInvalidPC(false);
     } catch {
       setInvalidPC(true);
       console.log("invalid postcode");
@@ -415,8 +419,20 @@ export const Campaign = ({ campaign }) => {
   const [fetchedTargets, setFetchedTargets] = useState([]);
 
   useEffect(() => {
+    if (newTemplate && channel == "Twitter" && fetchedTargets.length > 0) {
+      setNewTemplate((old) =>
+        old.replace(
+          `<<TargetHandle>>`,
+          fetchedTargets.map((targ) => targ.handle)
+        )
+      );
+    }
+  }, [target, fetchedTargets, newTemplate]);
+
+  useEffect(() => {
     //find region
-    if (scotConstituency) {
+
+    if (bulkTarget == "msps" && scotConstituency) {
       let region = regions.filter(
         (region) => region.constituency == scotConstituency
       )[0].region;
@@ -432,7 +448,8 @@ export const Campaign = ({ campaign }) => {
   }, [scotConstituency]);
 
   useEffect(() => {
-    setFetchedTargets(MPs.filter((mp) => mp.constituency == constituency));
+    bulkTarget == "mps" &&
+      setFetchedTargets(MPs.filter((mp) => mp.constituency == constituency));
   }, [constituency]);
 
   //return loading screen if campaign not loaded
@@ -528,6 +545,20 @@ export const Campaign = ({ campaign }) => {
                     value={postcode}
                     onChange={(e) => setPostcode(e.target.value)}
                   />
+
+                  {invalidPC && (
+                    <div
+                      style={{
+                        textAlign: "center",
+                        color: "rgba(221,28,26,1)",
+                      }}
+                    >
+                      Invalid postcode - try again:
+                      <br />
+                      <br />
+                    </div>
+                  )}
+
                   <center>
                     <Button
                       style={BtnStyle}
@@ -540,20 +571,27 @@ export const Campaign = ({ campaign }) => {
 
                 {searching && "Loading..."}
                 <div>
-                  {!searching && bulkTarget == "msps" && scotConstituency && (
-                    <>
-                      Your constituency is <u>{scotConstituency}</u>.
-                    </>
-                  )}
-                  {!searching && bulkTarget == "mps" && constituency && (
-                    <>
-                      Your constituency is <u>{constituency}</u>.
-                    </>
-                  )}
+                  {!invalidPC &&
+                    !searching &&
+                    bulkTarget == "msps" &&
+                    scotConstituency && (
+                      <>
+                        Your constituency is <u>{scotConstituency}</u>.
+                      </>
+                    )}
+                  {!invalidPC &&
+                    !searching &&
+                    bulkTarget == "mps" &&
+                    constituency && (
+                      <>
+                        Your constituency is <u>{constituency}</u>.
+                      </>
+                    )}
                 </div>
 
                 <NavButtonBox
                   nextDisabled={
+                    invalidPC ||
                     (bulkTarget == "msps" && !scotConstituency) ||
                     (bulkTarget == "mps" && !constituency)
                   }
@@ -637,9 +675,11 @@ export const Campaign = ({ campaign }) => {
                       label="To:"
                       id="subject"
                       fullWidth
-                      value={fetchedTargets.map((targ) => " " + targ.name + " - " + targ.party)}
+                      value={[...campaign.target, ...fetchedTargets].map(
+                        (targ) =>
+                          ` ${targ.name} ${targ.party ? `- ${targ.party}` : ""}`
+                      )}
                       sx={TextFieldStyle}
-                      disabled
                     />
 
                     <TextField

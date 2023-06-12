@@ -78,16 +78,16 @@ export const Campaigns = [
     ],
   },
   {
-    uuid: "msps",
+    uuid: "right2choice",
     blurb:
-      "Email your msps",
-    channel: "Email",
-    host: "Crabbit Scotsman",
+      "Nobody, anywhere, ever, should be forced to have a child they don't want\n\nAs resurgent, far-right, misogynist attacks on reproductive health step up, it is more important than ever that MPs stand up and vocally defend the right to choose.\n\nWill you send a tweet to your MP and ask what they're doing to defend the right to safe and legal abortion?",
+    channel: "Twitter",
+    host: "Right2Choice",
     template:
-      "test",
-    title: "email your MSPs!",
+      "Hey <<TargetHandle>>! What are you doing to defend the right to safe & legal abortion?",
+    title: "MPs: Defend the right to choose",
     target: [],
-    subject: "Time to negotiate!",
+    subject: "",
     prompts: [],
     bulkTarget: "mps",
   },
