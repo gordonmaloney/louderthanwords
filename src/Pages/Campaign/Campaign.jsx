@@ -80,6 +80,9 @@ export const Campaign = ({ campaign }) => {
   } = campaign;
 
   const [newSubject, setNewSubject] = useState(subject);
+  useEffect(() => {
+    setNewSubject(subject)
+  }, [subject])
 
   //initialise action target
   const [actionTarget, setActionTarget] = useState("");
@@ -251,9 +254,9 @@ export const Campaign = ({ campaign }) => {
         (targ) => targ.handle + `,`
       )}${fetchedTargets.map(
         (targ) => targ.email + `,`
-      )}?subject=${newSubject}&bcc=${bcc ? bcc : ""}&body=${
-        encodeURIComponent(newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A")
-      }`;
+      )}?subject=${newSubject}&bcc=${bcc ? bcc : ""}&body=${encodeURIComponent(
+        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+      )}`;
 
       window.open(sendLink);
     }
@@ -263,9 +266,9 @@ export const Campaign = ({ campaign }) => {
         (targ) => targ.handle + `,`
       )}${fetchedTargets.map(
         (targ) => targ.email + `,`
-      )}&su=${newSubject}&bcc=${bcc ? bcc : ""}&body=${
-        encodeURIComponent(newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A")
-      }`;
+      )}&su=${newSubject}&bcc=${bcc ? bcc : ""}&body=${encodeURIComponent(
+        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+      )}`;
       window.open(sendLink);
     }
 
@@ -274,9 +277,9 @@ export const Campaign = ({ campaign }) => {
         (targ) => targ.handle + `,`
       )}${fetchedTargets.map(
         (targ) => targ.email + `,`
-      )}&Subject=${newSubject}&bcc=${bcc ? bcc : ""}&Body=${
-        encodeURIComponent(newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A")
-      }`;
+      )}&Subject=${newSubject}&bcc=${bcc ? bcc : ""}&Body=${encodeURIComponent(
+        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+      )}`;
       window.open(sendLink);
     }
 
@@ -321,14 +324,12 @@ export const Campaign = ({ campaign }) => {
           </Button>
         ) : (
           <Button
-            disabled={nextDisabled}
             variant="outlined"
             onClick={() => setIsSendOpen(true)}
             sx={{
               ...BtnStyle,
               float: "right",
-              width: "200px",
-              display: value == 3 ? "none" : "inline-block",
+              display: value == 4 ? "none" : "inline-block",
             }}
           >
             send
@@ -392,26 +393,36 @@ export const Campaign = ({ campaign }) => {
 
   const fetchPostcodeData = async () => {
     setSearching(true);
-    try {
-      const scotland_response = await fetch(
-        `https://api.postcodes.io/scotland/postcodes/${postcode}`
-      );
 
+    try {
       const uk_response = await fetch(
         `https://api.postcodes.io/postcodes/${postcode}`
       );
 
-      const scotland_data = await scotland_response.json();
       const uk_data = await uk_response.json();
       setConstituency(uk_data.result.parliamentary_constituency);
-      setScotConstituency(
-        scotland_data.result.scottish_parliamentary_constituency
-      );
+
+      if (uk_data.result.country == "Scotland") {
+        try {
+          const scotland_response = await fetch(
+            `https://api.postcodes.io/scotland/postcodes/${postcode}`
+          );
+
+          const scotland_data = await scotland_response.json();
+          setScotConstituency(
+            scotland_data.result.scottish_parliamentary_constituency
+          );
+        } catch {
+          setInvalidPC(true);
+          setFetchedTargets([]);
+          setSearching(false);
+        }
+      }
       setSearching(false);
       setInvalidPC(false);
     } catch {
       setInvalidPC(true);
-      console.log("invalid postcode");
+      setFetchedTargets([]);
       setSearching(false);
     }
   };
@@ -451,6 +462,47 @@ export const Campaign = ({ campaign }) => {
     bulkTarget == "mps" &&
       setFetchedTargets(MPs.filter((mp) => mp.constituency == constituency));
   }, [constituency]);
+
+  //handle target doesn't have twitter/email:
+  const [noneFound, setNoneFound] = useState(false);
+  useEffect(() => {
+    if (
+      constituency &&
+      MPs.filter((mp) => mp.constituency == constituency).filter(
+        (mp) => mp.handle
+      ).length == 0
+    ) {
+      console.log("none found");
+      setNoneFound(true);
+    }
+    if (
+      scotConstituency &&
+      msps
+        .filter((msp) => msp.constituency == scotConstituency)
+        .filter((msp) => msp.handle).length == 0
+    ) {
+      setNoneFound(true);
+    }
+
+    if (
+      constituency &&
+      MPs.filter((mp) => mp.constituency == constituency).filter(
+        (mp) => mp.handle
+      ).length > 0
+    ) {
+      setNoneFound(false);
+    }
+    if (
+      bulkTarget == "msp" &&
+      msps
+        .filter((msp) => msp.constituency == scotConstituency)
+        .filter((msp) => msp.handle).length > 0
+    ) {
+      setNoneFound(false);
+    }
+  }, [constituency, scotConstituency]);
+
+  console.log({ noneFound });
 
   //return loading screen if campaign not loaded
   if (!campaign) {
@@ -505,6 +557,7 @@ export const Campaign = ({ campaign }) => {
                     .filter(
                       (prompt) =>
                         promptAnswers[prompt.id] == "" ||
+                        promptAnswers[prompt.id] == null ||
                         promptAnswers[prompt.id] == "noOptionSelected"
                     ).length > 0 ||
                     (campaign.bulkTarget == "msps" && !scotConstituency) ||
@@ -584,7 +637,11 @@ export const Campaign = ({ campaign }) => {
                     bulkTarget == "mps" &&
                     constituency && (
                       <>
-                        Your constituency is <u>{constituency}</u>.
+                        Your constituency is <u>{constituency}</u>. Your MP is{" "}
+                        {fetchedTargets[0].name},{" "}
+                        {noneFound && bulkTarget == "mps"
+                          ? "but they don't seem to be on Twitter. You can still take this action, you just won't be able to Tweet at them directly. If you think that's wrong, please get in touch."
+                          : `and their Twitter handle is: ${fetchedTargets[0].handle}`}
                       </>
                     )}
                 </div>
@@ -649,13 +706,15 @@ export const Campaign = ({ campaign }) => {
                     </div>
                   );
                 })}
+          
                 <NavButtonBox
                   nextDisabled={
                     prompts
                       .filter((prompt) => prompt.required)
                       .filter(
                         (prompt) =>
-                          promptAnswers[prompt.id] == "" ||
+                        promptAnswers[prompt.id] == "" ||
+                          promptAnswers[prompt.id] == null ||
                           promptAnswers[prompt.id] == "noOptionSelected"
                       ).length > 0
                   }
@@ -702,7 +761,19 @@ export const Campaign = ({ campaign }) => {
                   sx={TextFieldStyle}
                   rows={10}
                   onChange={(e) => setNewTemplate(e.target.value)}
+                  inputProps={channel == "Twitter" && {
+                    maxLength:
+                      channel == "Twitter" &&
+                      280
+                  }}
                 />
+                {campaign.channel == "Twitter" && (
+            <span style={{ width: "100%", textAlign: "right",
+            textDecoration: newTemplate?.length == 280 && "underline",
+            color: [newTemplate?.length < 250 ? 'black' : newTemplate?.length < 270 ? 'darkred' : "rgba(221,28,26,1)" ]
+            }}>
+              {newTemplate?.length} / 280
+            </span>)}
                 <NavButtonBox send />
               </>
             }

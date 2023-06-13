@@ -91,4 +91,27 @@ export const Campaigns = [
     prompts: [],
     bulkTarget: "mps",
   },
+
+  {
+    uuid: "naetransphobia",
+    blurb:
+      "Nobody, anywhere, ever, should be forced to have a child they don't want\n\nAs resurgent, far-right, misogynist attacks on reproductive health step up, it is more important than ever that MPs stand up and vocally defend the right to choose.\n\nWill you send a tweet to your MP and ask what they're doing to defend the right to safe and legal abortion?",
+    channel: "Email",
+    host: "Iona Barber",
+    template:
+      "Hi,\n\nI am writing to you, as my MSPs, to ask that you stand up for the rights of trans people in Scotland.\n\n<<personalstory>>\n\nAs hostile and hateful media attacks ramp up, it is vital that allies speak out.",
+    title: "Tell MSPs to stand up for trans people in Scotland",
+    target: [],
+    bcc: "campaigns@naetransphobia.scot",
+    subject: "Stand up for Scotland's trans people",
+    prompts: [
+      {
+        question: "It's important to show that this is personal to you, so take a moment to say why you care about this:",
+        answerType: "text",
+        id: "personalstory",
+        required: true,
+      },
+    ],
+    bulkTarget: "msps",
+  },
 ];
