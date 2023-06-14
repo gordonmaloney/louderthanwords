@@ -56,7 +56,13 @@ background-repeat: no-repeat;
 overflow: hidden;
 
 }
+
 @media (max-width: 500px) {
+  .landingHeader {
+    background-size: 130% ;
+  }
+}
+@media (max-width: 400px) {
   .landingHeader {
     background-size: 160% ;
   }

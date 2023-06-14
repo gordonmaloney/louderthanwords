@@ -23,6 +23,9 @@ import { ReviewModal } from "./ReviewModal";
 import { ShepherdTour, ShepherdTourContext } from "react-shepherd";
 import { tourOptions } from "./Tour";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import axios from "axios";
+import { API_URL } from "../../API";
+import { useNavigate } from "react-router-dom";
 
 const TooltipStyle = {
   tooltip: {
@@ -80,7 +83,7 @@ const TextFieldStyle = {
 
 export const CreateTabs = () => {
   const Mobile = useMediaQuery("(max-width:900px)");
-
+const navigate = useNavigate()
   const [newCampaign, setNewCampaign] = useState({
     title: "",
     blurb: "",
@@ -240,11 +243,27 @@ export const CreateTabs = () => {
     />
   );
 
+  const [titleInUse, setTitleInUse] = useState(false);
+  const checkIfTitleInUse = async (checkUuid) => {
+    const response = await axios.get(API_URL + "all");
+    if (response.data.find((camp) => camp.uuid == checkUuid) !== undefined) {
+      setTitleInUse(true);
+    } else {
+      setTitleInUse(false);
+    }
+  };
+
   //set uuid based on title
   useEffect(() => {
     let newId = newCampaign.title.replaceAll(" ", "-");
     setNewCampaign({ ...newCampaign, uuid: newId });
   }, [newCampaign.title]);
+
+  useEffect(() => {
+    if (value == 4) {
+      checkIfTitleInUse(newCampaign.uuid);
+    }
+  }, [value]);
 
   const TargetTab = (
     <TabBody
@@ -767,6 +786,21 @@ export const CreateTabs = () => {
     }
   }, [tooltipOpen]);
 
+  const handleLaunch = async () => {
+
+    await axios.get(API_URL + "all")
+    .then(response => {
+      if (response.data.find((camp) => camp.uuid == newCampaign.uuid) !== undefined) {
+        setTitleInUse(true);
+      } else {
+        setTitleInUse(false);
+        axios.post(API_URL, newCampaign).then(() => {
+          navigate("../" + newCampaign.uuid)
+        });
+      }
+    })
+  };
+
   const ReviewTab = (
     <TabBody
       title="Review & launch"
@@ -775,6 +809,14 @@ export const CreateTabs = () => {
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Campaign URL:{" "}
+              <Button
+                style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                onClick={() => {
+                  checkIfTitleInUse(newCampaign.uuid);
+                }}
+              >
+                Check availability
+              </Button>
               <Tooltip
                 title="Copied!"
                 componentsProps={TooltipStyle}
@@ -786,7 +828,12 @@ export const CreateTabs = () => {
                 arrow
               >
                 <Button
-                  style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                  disabled={titleInUse}
+                  style={{
+                    ...BtnStyle,
+                    transform: "scale(0.7)",
+                    display: titleInUse && "none",
+                  }}
                   onClick={() => {
                     setTooltipOpen(true);
                     navigator.clipboard.writeText(
@@ -813,6 +860,11 @@ export const CreateTabs = () => {
                 ),
               }}
             />
+            {titleInUse && (
+              <span style={{ color: "rgb(221,28,26)" }}>
+                This URL is taken! Please try another.
+              </span>
+            )}
           </div>
 
           <div style={{ marginBottom: "10px" }}>
@@ -838,7 +890,13 @@ export const CreateTabs = () => {
             </span>
             <br />
             <center>
-              <Button sx={{ ...BtnStyle, marginTop: "8px" }}>launch</Button>
+              <Button
+              disabled={titleInUse}
+                sx={{ ...BtnStyle, marginTop: "8px" }}
+                onClick={() => handleLaunch()}
+              >
+                launch
+              </Button>
             </center>
           </div>
           <NavButtonBox />

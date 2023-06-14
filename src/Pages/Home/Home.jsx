@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Grid } from "@mui/material";
 import WomanPhone from "../../Images/woman phone.png";
 import Devices from "../../Images/devices2.png";
@@ -11,17 +11,33 @@ import { HomeCarousel } from "./HomeCarousel";
 import Devices4 from "../../Images/devices4.png";
 import { CampaignCarousel } from "./CampaignCarousel";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Loading } from "../Campaign/Loading";
+
+import Carousel1 from "./carousel1.png";
 
 export const Home = () => {
   const Small = useMediaQuery("(max-width:600px)");
 
   const Mobile = useMediaQuery("(max-width:900px)");
 
+  const [loaded,setLoaded] = useState(false)
+  
+
+  if (!loaded) {
+    return (
+      <>
+      <Loading />
+
+      <img src={Carousel1} onLoad={() => setLoaded(true)} style={{opacity: '0 !important', height: '1px', width: '1px'}} />
+      </>
+    )
+  }
+
   return (
     <div>
       <div className="homeContainer">
         <section className="homeChild">
-          <HomeCarousel />
+          <HomeCarousel/>
         </section>
         <section className="homeChild">
           <Grid container sx={{ padding: "0 8%" }}>
@@ -95,7 +111,11 @@ export const Home = () => {
                   letter campaigns, engage your members, and create a voice that
                   cannot be ignored.
                 </p>
-                <img src={WomanPhone} width={Mobile ? "100%" : "75%"} height="auto" />
+                <img
+                  src={WomanPhone}
+                  width={Mobile ? "100%" : "75%"}
+                  height="auto"
+                />
               </center>
             </Grid>
           </Grid>
@@ -111,7 +131,7 @@ export const Home = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: !Small ? "150px" : ""
+                marginBottom: !Small ? "150px" : "",
               }}
             >
               <p

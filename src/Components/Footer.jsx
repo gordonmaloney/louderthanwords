@@ -20,7 +20,6 @@ export const Footer = () => {
     <div className="footer">
       <Grid container alignItems="center">
         <Grid item xs={12} sm={6} sx={{borderRight: !Mobile && '1px solid rgb(255, 241, 208)'}}>
-          Louder Than Words <br />
           <Link to="/privacypolicy">Privacy Policy</Link>
           <br />
           <Link to="/termsofservice">Terms of Service</Link>

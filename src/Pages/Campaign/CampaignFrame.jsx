@@ -6,6 +6,9 @@ import Megaphone from "../../Images/megaphones.png";
 import { Campaign } from "./Campaign";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { BtnStyle } from "../../MUIStyles";
+import { API_URL } from "../../API";
+import axios from "axios";
+import { Loading } from "./Loading";
 
 export const CampaignFrame = () => {
   const Mobile = useMediaQuery("(max-width:900px)");
@@ -15,7 +18,21 @@ export const CampaignFrame = () => {
   const { campaignId } = params;
 
   //find campaign from campaigns
-  const campaign = Campaigns.find((campaign) => campaign.uuid == campaignId);
+  //const campaign = Campaigns.find((campaign) => campaign.uuid == campaignId);
+
+  const [campaign, setCampaign] = useState("");
+
+  const getCampaign = async () => {
+    await axios.get(API_URL + campaignId).then((response) => {
+      setCampaign(response.data);
+    });
+  };
+
+  !campaign && getCampaign();
+
+  if (!campaign) {
+    return <Loading />;
+  }
 
   return (
     <div style={{ minHeight: "100vh" }}>

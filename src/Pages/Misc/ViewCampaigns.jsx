@@ -1,16 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Button } from "@mui/material";
 import { BtnStyle } from "../../MUIStyles";
-import { Campaigns } from "../../Data/DummyCampaigns";
+//import { Campaigns } from "../../Data/DummyCampaigns";
 import { CampaignBox } from "../../Components/CampaignBox";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import CrowdsClouds from "../../Images/crowdsclouds.png";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { API_URL } from "../../API";
+import { Loading } from "../Campaign/Loading";
 
 export const ViewCampaigns = () => {
   const Large = useMediaQuery("(max-width:1200px)");
   const Medium = useMediaQuery("(max-width:900px)");
   const Mobile = useMediaQuery("(max-width:650px)");
+
+  const [Campaigns, setCampaigns] = useState([]);
+
+  const getCampaigns = async () => {
+    await axios.get(API_URL + "all").then((response) => {
+      setCampaigns(response.data);
+    });
+  };
+
+  if (Campaigns.length == 0) {
+    getCampaigns();
+    return (
+          <Loading />
+    );
+  }
 
   return (
     <div
@@ -37,7 +55,7 @@ export const ViewCampaigns = () => {
             style={{ flexDirection: Medium && "column-reverse" }}
           >
             <Grid item xs={12} md={5} lg={4}>
-              <Grid container >
+              <Grid container>
                 <Grid item xs={12} sm={6} md={12}>
                   <center>
                     <img
@@ -50,7 +68,7 @@ export const ViewCampaigns = () => {
                     />
                   </center>
                 </Grid>
-                <Grid item  xs={12} sm={6}  md={12}>
+                <Grid item xs={12} sm={6} md={12}>
                   <center>
                     <div style={{ width: "100%" }}>
                       <div

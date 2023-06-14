@@ -105,7 +105,6 @@ export const Campaign = ({ campaign }) => {
     setPromptAnswers(newPrompts);
   };
 
-  console.log(promptAnswers["tenant"]);
 
   useEffect(() => {
     initialisePrompts();
@@ -501,8 +500,6 @@ export const Campaign = ({ campaign }) => {
       setNoneFound(false);
     }
   }, [constituency, scotConstituency]);
-
-  console.log({ noneFound });
 
   //return loading screen if campaign not loaded
   if (!campaign) {

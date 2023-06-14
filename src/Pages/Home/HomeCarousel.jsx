@@ -5,7 +5,10 @@ import Carousel1 from "./carousel1.png";
 import Carousel2 from "./carousel2.png";
 import Carousel3 from "./carousel3.png";
 
-export const HomeCarousel = () => {
+export const HomeCarousel = ({loaded}) => {
+
+
+
   {
     var items = [
       {
@@ -49,7 +52,8 @@ function Item(props) {
         height: "100%",
         width: "100vw",
         paddingTop: "50px",
-        margin: "0 auto",
+        margin: "0",
+        marginLeft: '-8px',
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
