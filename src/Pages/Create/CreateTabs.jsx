@@ -26,6 +26,9 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios";
 import { API_URL } from "../../API";
 import { useNavigate } from "react-router-dom";
+import {IconButton} from "@mui/material";
+import { Visibility } from "@mui/icons-material";
+import { VisibilityOff } from "@mui/icons-material";
 
 const TooltipStyle = {
   tooltip: {
@@ -94,6 +97,7 @@ export const CreateTabs = () => {
     target: [],
     bcc: "",
     channel: "Select",
+    password: "",
     prompts: [],
     template: "",
     bulkTarget: "select",
@@ -804,8 +808,20 @@ export const CreateTabs = () => {
   const handleLaunch = async () => {
     await axios.get(API_URL + "all").then((response) => {
       if (
-        response.data.find((camp) => camp.uuid == newCampaign.uuid) !==
-        undefined
+        [
+          ...response.data,
+          { uuid: "home" },
+          { uuid: "contact" },
+          { uuid: "donate" },
+          { uuid: "faq" },
+          { uuid: "runcampaign" },
+          { uuid: "create" },
+          { uuid: "donationpolicy" },
+          { uuid: "privacypolicy" },
+          { uuid: "partner" },
+          { uuid: "termsofservice" },
+          { uuid: "campaigns" },
+        ].find((camp) => camp.uuid == newCampaign.uuid) !== undefined
       ) {
         setTitleInUse(true);
       } else {
@@ -816,6 +832,10 @@ export const CreateTabs = () => {
       }
     });
   };
+
+
+  //handle showpassword
+  const [showPassword, setShowPassword] = useState(true)
 
   const ReviewTab = (
     <TabBody
@@ -883,6 +903,36 @@ export const CreateTabs = () => {
             )}
           </div>
 
+          <div style={{ marginBottom: "10px" }}>
+            <span style={{ fontFamily: "Fjalla One" }}>
+              Optional: If you would like to be able to edit your campaign later on, you
+              can set a secure password here to do so.
+            </span>
+            <TextField
+              style={TextFieldStyle}
+              fullWidth
+              id="password"
+              type={showPassword ? "password" : "text"}
+              value={newCampaign.password}
+              onChange={(e) =>
+                setNewCampaign({ ...newCampaign, password: e.target.value })
+              }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start" onClick={() => {}}>
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={() => setShowPassword(!showPassword)}
+                      onMouseDown={() => setShowPassword(!showPassword)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>{" "}
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </div>
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Use the button below to preview what your campaign will look like

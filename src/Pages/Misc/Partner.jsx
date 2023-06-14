@@ -7,6 +7,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const Partner = () => {
   const Mobile = useMediaQuery("(max-width:900px)");
+  const Width500  = useMediaQuery("(max-width:500px)");
 
   return (
     <div className="homeContainer">
@@ -93,14 +94,14 @@ export const Partner = () => {
             </Grid>
           </Grid>
         </div>
-        <div className="homeChild" style={{ paddingBottom: "20px" }}>
+        <div className="homeChild" style={{ paddingBottom: "40px" }}>
           <Grid
             spacing={4}
             container
             justifyContent="center"
             alignItems="center"
           >
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <img
                 src={RaisedFists}
                 width="140%"
@@ -125,7 +126,7 @@ export const Partner = () => {
               </p>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} md={6}>
               <p>
                 Please note that pricing details for our partnership program
                 will be discussed on an individual basis. We look forward to
@@ -135,7 +136,7 @@ export const Partner = () => {
               <center>
                 <img src={Devices} width="80%" />
               </center>
-              <p style={{marginBottom: Mobile && "250px"}}>
+              <p style={{marginBottom: Width500 ? "250px" : Mobile ? "150px" : ''}}>
                 Let's make a difference together. Join us in the fight for
                 change through impactful campaigns. Partner with Louder Than
                 Words today!
