@@ -62,6 +62,7 @@ export const Campaign = ({ campaign }) => {
   let { pathname } = useLocation();
 
   const Mobile = useMediaQuery("(max-width:900px)");
+  const Width500 = useMediaQuery("(max-width:500px)");
 
   const {
     uuid,
@@ -515,7 +516,7 @@ export const Campaign = ({ campaign }) => {
         flexDirection: Mobile ? "column" : "row",
         margin: "0 auto",
         paddingBottom: "0",
-        minWidth: Mobile ? "100vw" : "98%",
+        minWidth: "100%",
         borderRadius: !Mobile && "15px",
         minHeight: "400px",
         marginBottom: pathname == "/create" ? "0px" : "150px",

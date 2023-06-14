@@ -83,7 +83,7 @@ const TextFieldStyle = {
 
 export const CreateTabs = () => {
   const Mobile = useMediaQuery("(max-width:900px)");
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const [newCampaign, setNewCampaign] = useState({
     title: "",
     blurb: "",
@@ -246,7 +246,22 @@ const navigate = useNavigate()
   const [titleInUse, setTitleInUse] = useState(false);
   const checkIfTitleInUse = async (checkUuid) => {
     const response = await axios.get(API_URL + "all");
-    if (response.data.find((camp) => camp.uuid == checkUuid) !== undefined) {
+    if (
+      [
+        ...response.data,
+        { uuid: "home" },
+        { uuid: "contact" },
+        { uuid: "donate" },
+        { uuid: "faq" },
+        { uuid: "runcampaign" },
+        { uuid: "create" },
+        { uuid: "donationpolicy" },
+        { uuid: "privacypolicy" },
+        { uuid: "partner" },
+        { uuid: "termsofservice" },
+        { uuid: "campaigns" },
+      ].find((camp) => camp.uuid == checkUuid) !== undefined
+    ) {
       setTitleInUse(true);
     } else {
       setTitleInUse(false);
@@ -787,18 +802,19 @@ const navigate = useNavigate()
   }, [tooltipOpen]);
 
   const handleLaunch = async () => {
-
-    await axios.get(API_URL + "all")
-    .then(response => {
-      if (response.data.find((camp) => camp.uuid == newCampaign.uuid) !== undefined) {
+    await axios.get(API_URL + "all").then((response) => {
+      if (
+        response.data.find((camp) => camp.uuid == newCampaign.uuid) !==
+        undefined
+      ) {
         setTitleInUse(true);
       } else {
         setTitleInUse(false);
         axios.post(API_URL, newCampaign).then(() => {
-          navigate("../" + newCampaign.uuid)
+          navigate("../" + newCampaign.uuid);
         });
       }
-    })
+    });
   };
 
   const ReviewTab = (
@@ -891,7 +907,7 @@ const navigate = useNavigate()
             <br />
             <center>
               <Button
-              disabled={titleInUse}
+                disabled={titleInUse}
                 sx={{ ...BtnStyle, marginTop: "8px" }}
                 onClick={() => handleLaunch()}
               >
@@ -1127,7 +1143,7 @@ const navigate = useNavigate()
           flexDirection: Mobile ? "column" : "row",
           margin: "0 auto",
           paddingBottom: "0",
-          minWidth: Mobile ? "100vw" : "98%",
+          minWidth: "100%",
           borderRadius: !Mobile && "15px",
           minHeight: "400px",
           marginBottom: "150px",

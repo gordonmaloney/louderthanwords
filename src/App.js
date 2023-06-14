@@ -36,7 +36,6 @@ const App = () => {
           <Route path="/donate" exact element={<Donate />} />
           <Route path="/faq" exact element={<FAQ />} />
           <Route path="/runcampaign" exact element={<RunCampaign />} />
-
           <Route path="/create" exact element={<Create />} />
           <Route path="/donationpolicy" exact element={<DonationPolicy />} />
           <Route path="/privacypolicy" exact element={<PrivacyPolicy />} />
