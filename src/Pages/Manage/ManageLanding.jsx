@@ -4,12 +4,20 @@ import { Analytics } from "./Analytics";
 import { CreateTabs } from "../Create/CreateTabs";
 import axios from "axios";
 import { API_URL } from "../../API";
+import { Button } from "@mui/material";
+import { BtnStyle } from "../../MUIStyles";
+import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
 
 export const ManageLanding = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const onClose = () => {
+    setIsOpen(false);
+  };
+
   const [uuid, setUuid] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
 
-  const [oldPassword, setOldPassword] = useState('')
+  const [oldPassword, setOldPassword] = useState("");
   const [campaign, setCampaign] = useState("");
 
   const getCampaign = async () => {
@@ -39,11 +47,11 @@ export const ManageLanding = () => {
           >
             Log in to manage your campaign or check its performance
           </h2>
-          <Login 
-          
-          setLoggedIn={setLoggedIn} 
-          setOldPassword={setOldPassword}
-          setUuid={setUuid} />
+          <Login
+            setLoggedIn={setLoggedIn}
+            setOldPassword={setOldPassword}
+            setUuid={setUuid}
+          />
         </center>
       </div>
     );
@@ -68,8 +76,18 @@ export const ManageLanding = () => {
           ></h2>
         </center>
 
-        <CreateTabs editing={campaign} oldPassword={oldPassword} />
-        <Analytics uuid={uuid} />
+        <div style={{ marginBottom: "200px" }}>
+          <CreateTabs editing={campaign} oldPassword={oldPassword} />
+          <Analytics uuid={uuid} />
+          <Button style={BtnStyle} onClick={() => setIsOpen(true)}>
+            Delete campaign
+          </Button>
+        </div>
+
+        <ConfirmDeleteModal isOpen={isOpen} onClose={onClose} 
+        oldPassword={oldPassword}
+        uuid={uuid}
+        />
       </div>
     );
   }
