@@ -1,12 +1,24 @@
 import React, { useState } from "react";
 import { Login } from "./Login";
 import { Analytics } from "./Analytics";
+import { CreateTabs } from "../Create/CreateTabs";
+import axios from "axios";
+import { API_URL } from "../../API";
 
 export const ManageLanding = () => {
+  const [uuid, setUuid] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
-    const [uuid, setUuid] = useState('')
-    const [loggedIn, setLoggedIn] = useState(true);
+  const [oldPassword, setOldPassword] = useState('')
+  const [campaign, setCampaign] = useState("");
 
+  const getCampaign = async () => {
+    await axios.get(API_URL + "campaigns/" + uuid).then((response) => {
+      setCampaign(response.data);
+    });
+  };
+
+  uuid && !campaign && getCampaign();
 
   if (!loggedIn) {
     return (
@@ -27,7 +39,11 @@ export const ManageLanding = () => {
           >
             Log in to manage your campaign or check its performance
           </h2>
-          <Login setLoggedIn={setLoggedIn} setUuid={setUuid} />
+          <Login 
+          
+          setLoggedIn={setLoggedIn} 
+          setOldPassword={setOldPassword}
+          setUuid={setUuid} />
         </center>
       </div>
     );
@@ -49,11 +65,11 @@ export const ManageLanding = () => {
               fontFamily: "Fjalla One",
               margin: "0 0 20px 0",
             }}
-          >
-          </h2>
-
-          <Analytics uuid='naetransphobia'/>
+          ></h2>
         </center>
+
+        <CreateTabs editing={campaign} oldPassword={oldPassword} />
+        <Analytics uuid={uuid} />
       </div>
     );
   }

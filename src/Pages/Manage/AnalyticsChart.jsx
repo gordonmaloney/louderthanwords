@@ -30,7 +30,7 @@ export const AnalyticsChart = ({ analyticsData }) => {
         position: "top",
       },
       title: {
-        display: true,
+        display: false,
         text: "",
       },
     },
@@ -44,35 +44,41 @@ export const AnalyticsChart = ({ analyticsData }) => {
   //remove duplicates
   const labels = [...new Set(AllEntries)];
 
-  const [visits, setVisits] = useState([])
-  const [clicks, setClicks] = useState([])
+  const [visits, setVisits] = useState([]);
+  const [clicks, setClicks] = useState([]);
 
   const getVisits = () => {
-    let visitsData = []
+    let visitsData = [];
 
-    labels.forEach(label =>{
-        visitsData.push(analyticsData.visits.filter(item => new Date(item.createdAt).toLocaleDateString() == label).length)
-    })
+    labels.forEach((label) => {
+      visitsData.push(
+        analyticsData.visits.filter(
+          (item) => new Date(item.createdAt).toLocaleDateString() == label
+        ).length
+      );
+    });
 
-    setVisits(visitsData)
-  }
+    setVisits(visitsData);
+  };
 
   const getClicks = () => {
-    let clickData = []
+    let clickData = [];
 
-    labels.forEach(label =>{
-        clickData.push(analyticsData.sendClicks.filter(item => new Date(item.createdAt).toLocaleDateString() == label).length)
-    })
+    labels.forEach((label) => {
+      clickData.push(
+        analyticsData.sendClicks.filter(
+          (item) => new Date(item.createdAt).toLocaleDateString() == label
+        ).length
+      );
+    });
 
-    setClicks(clickData)
-  }
+    setClicks(clickData);
+  };
 
   useEffect(() => {
-    getVisits()
-    getClicks()
-  }, [])
-
-
+    getVisits();
+    getClicks();
+  }, []);
 
   const data = {
     labels,
@@ -80,21 +86,42 @@ export const AnalyticsChart = ({ analyticsData }) => {
       {
         label: "Visits",
         data: visits,
-        borderColor: "rgb(255, 99, 132)",
-        backgroundColor: "rgba(255, 99, 132, 0.5)",
+        borderColor: "#51798D",
+        backgroundColor: "#51798D",
       },
       {
         label: "Sends",
         data: clicks,
-        borderColor: "rgb(53, 162, 235)",
-        backgroundColor: "rgba(53, 162, 235, 0.5)",
+        borderColor: "#DD1C1A",
+        backgroundColor: "#DD1C1A",
       },
     ],
   };
 
   return (
-    <div>
-      <Line options={options} data={data} />{" "}
+    <div
+      style={{
+        backgroundColor: "#DD1C1A",
+        borderRadius: "15px",
+        padding: "10px",
+        width: "300px",
+        height: "200px",
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: "white",
+          height: "190px",
+          borderRadius: "12px",
+          padding: "5px",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignContent: "center",
+        }}
+      >
+        <Line options={options} data={data} />{" "}
+      </div>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import { IconButton, Button } from "@mui/material";
 import axios from "axios";
 import { API_URL } from "../../API";
 
-export const Login = ({setLoggedIn, setUuid}) => {
+export const Login = ({setLoggedIn, setUuid, setOldPassword}) => {
   const Mobile = useMediaQuery("(max-width:600px)");
 
   const [logInData, setLogInData] = useState({ uuid: "", password: "" });
@@ -27,6 +27,7 @@ export const Login = ({setLoggedIn, setUuid}) => {
       console.log(response.status);
       response.status == '200' && setLoggedIn(true)
       response.status == '200' && setUuid(payload.uuid)
+      response.status == "200" && setOldPassword(logInData.password)
     } catch (err) {
       console.log(err.response.status);
     }

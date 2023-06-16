@@ -84,7 +84,7 @@ const TextFieldStyle = {
   },
 };
 
-export const CreateTabs = () => {
+export const CreateTabs = ({ editing, oldPassword }) => {
   const Mobile = useMediaQuery("(max-width:900px)");
   const navigate = useNavigate();
   const [newCampaign, setNewCampaign] = useState({
@@ -101,7 +101,12 @@ export const CreateTabs = () => {
     prompts: [],
     template: "",
     bulkTarget: "select",
+    oldPassword: "",
   });
+
+  if (editing && newCampaign.uuid == "") {
+    setNewCampaign({ ...editing, password: "", oldPassword: oldPassword});
+  }
 
   const [optionalFields, setOptionalFields] = useState({ prompts: false });
 
@@ -275,7 +280,7 @@ export const CreateTabs = () => {
   //set uuid based on title
   useEffect(() => {
     let newId = newCampaign.title.replaceAll(" ", "-");
-    setNewCampaign({ ...newCampaign, uuid: newId });
+    !editing && setNewCampaign({ ...newCampaign, uuid: newId });
   }, [newCampaign.title]);
 
   useEffect(() => {
@@ -465,7 +470,9 @@ export const CreateTabs = () => {
           <NavButtonBox
             nextDisabled={
               newCampaign.channel == "Select" ||
-              (newCampaign.channel == "Email" && newCampaign.target.length == 0)
+              (newCampaign.channel == "Email" &&
+                newCampaign.target.length == 0 &&
+                newCampaign.bulkTarget == "select")
             }
           />
         </>
@@ -806,31 +813,45 @@ export const CreateTabs = () => {
   }, [tooltipOpen]);
 
   const handleLaunch = async () => {
-    await axios.get(API_URL + "campaigns/all").then((response) => {
-      if (
-        [
-          ...response.data,
-          { uuid: "home" },
-          { uuid: "contact" },
-          { uuid: "donate" },
-          { uuid: "faq" },
-          { uuid: "runcampaign" },
-          { uuid: "create" },
-          { uuid: "donationpolicy" },
-          { uuid: "privacypolicy" },
-          { uuid: "partner" },
-          { uuid: "termsofservice" },
-          { uuid: "campaigns" },
-        ].find((camp) => camp.uuid == newCampaign.uuid) !== undefined
-      ) {
-        setTitleInUse(true);
-      } else {
-        setTitleInUse(false);
-        axios.post(API_URL + "campaigns/", newCampaign).then(() => {
-          navigate("../" + newCampaign.uuid);
-        });
+    if (!editing) {
+      await axios.get(API_URL + "campaigns/all").then((response) => {
+        if (
+          [
+            ...response.data,
+            { uuid: "home" },
+            { uuid: "contact" },
+            { uuid: "donate" },
+            { uuid: "faq" },
+            { uuid: "runcampaign" },
+            { uuid: "create" },
+            { uuid: "donationpolicy" },
+            { uuid: "privacypolicy" },
+            { uuid: "partner" },
+            { uuid: "termsofservice" },
+            { uuid: "campaigns" },
+          ].find((camp) => camp.uuid == newCampaign.uuid) !== undefined
+        ) {
+          setTitleInUse(true);
+        } else {
+          setTitleInUse(false);
+          axios.post(API_URL + "campaigns/", newCampaign).then(() => {
+            navigate("../" + newCampaign.uuid);
+          });
+        }
+      });
+    }
+
+    if (editing) {
+      try {
+        axios
+          .post(API_URL + "campaigns/edit/" + newCampaign.uuid, newCampaign)
+          .then(() => {
+            navigate("../" + newCampaign.uuid);
+          });
+      } catch (err) {
+        console.log(err);
       }
-    });
+    }
   };
 
   //handle showpassword
@@ -838,14 +859,18 @@ export const CreateTabs = () => {
 
   const ReviewTab = (
     <TabBody
-      title="Review & launch"
+      title={`Review & ${!editing ? "save" : "launch"}`}
       body={
         <>
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Campaign URL:{" "}
               <Button
-                style={{ ...BtnStyle, transform: "scale(0.7)" }}
+                style={{
+                  ...BtnStyle,
+                  transform: "scale(0.7)",
+                  display: editing && "none",
+                }}
                 onClick={() => {
                   checkIfTitleInUse(newCampaign.uuid);
                 }}
@@ -863,11 +888,11 @@ export const CreateTabs = () => {
                 arrow
               >
                 <Button
-                  disabled={titleInUse}
+                  disabled={titleInUse && !editing}
                   style={{
                     ...BtnStyle,
                     transform: "scale(0.7)",
-                    display: titleInUse && "none",
+                    display: titleInUse && !editing && "none",
                   }}
                   onClick={() => {
                     setTooltipOpen(true);
@@ -883,6 +908,7 @@ export const CreateTabs = () => {
             <TextField
               style={TextFieldStyle}
               fullWidth
+              disabled={editing}
               value={newCampaign.uuid}
               onChange={(e) =>
                 setNewCampaign({ ...newCampaign, uuid: e.target.value })
@@ -895,7 +921,7 @@ export const CreateTabs = () => {
                 ),
               }}
             />
-            {titleInUse && (
+            {titleInUse && !editing && (
               <span style={{ color: "rgb(221,28,26)" }}>
                 This URL is taken! Please try another.
               </span>
@@ -904,8 +930,17 @@ export const CreateTabs = () => {
 
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
-              Optional: If you would like to be able to edit your campaign later
-              on, you can set a secure password here to do so.
+              {!editing ? (
+                <>
+                  Optional: If you would like to be able to edit your campaign
+                  later on, you can set a secure password here to do so.
+                </>
+              ) : (
+                <>
+                  You can change your password by entering a new one in here, or
+                  just leave it blank to keep your old one.
+                </>
+              )}
             </span>
             <TextField
               style={TextFieldStyle}
@@ -956,11 +991,11 @@ export const CreateTabs = () => {
             <br />
             <center>
               <Button
-                disabled={titleInUse}
+                disabled={titleInUse && !editing}
                 sx={{ ...BtnStyle, marginTop: "8px" }}
                 onClick={() => handleLaunch()}
               >
-                launch
+                {!editing ? "Launch" : "Save"}
               </Button>
             </center>
           </div>
@@ -969,7 +1004,7 @@ export const CreateTabs = () => {
       }
     />
   );
-
+console.log(newCampaign)
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => {
     setIsOpen(false);
@@ -1257,7 +1292,8 @@ export const CreateTabs = () => {
                   !newCampaign.host ||
                   newCampaign.channel == "Select" ||
                   (newCampaign.channel == "Email" &&
-                    newCampaign.target.length == 0)
+                    newCampaign.target.length == 0 &&
+                    newCampaign.bulkTarget == "select")
                 }
               />
               <Tab
@@ -1266,7 +1302,8 @@ export const CreateTabs = () => {
                   !newCampaign.host ||
                   newCampaign.channel == "Select" ||
                   (newCampaign.channel == "Email" &&
-                    newCampaign.target.length == 0)
+                    newCampaign.target.length == 0 &&
+                    newCampaign.bulkTarget == "select")
                 }
                 className="template"
                 label="Template"
@@ -1279,10 +1316,11 @@ export const CreateTabs = () => {
                   !newCampaign.host ||
                   newCampaign.channel == "Select" ||
                   (newCampaign.channel == "Email" &&
-                    newCampaign.target.length == 0)
+                    newCampaign.target.length == 0 &&
+                    newCampaign.bulkTarget == "select")
                 }
                 className="review"
-                label="Review & Launch"
+                label={`Review & ${!editing ? "Launch" : "Save"}`}
                 sx={TabStyle}
                 value={4}
               />
