@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import axios from "axios";
 //routes
 import { Landing } from "./Pages/Landing/Landing";
 import { Create } from "./Pages/Create/Create";
@@ -16,13 +16,31 @@ import { Partner } from "./Pages/Misc/Partner";
 import { CampaignFrame } from "./Pages/Campaign/CampaignFrame";
 import { DonationPolicy } from "./Pages/Misc/DonationPolicy";
 import { ViewCampaigns } from "./Pages/Misc/ViewCampaigns";
-
+import { ManageLanding } from "./Pages/Manage/ManageLanding";
 import { Donate } from "./Pages/Misc/Donate";
 import { Contact } from "./Pages/Misc/Contact";
 import { FAQ } from "./Pages/Misc/FAQ";
 import { RunCampaign } from "./Pages/Misc/RunCampaign";
+import { API_URL } from "./API";
 
 const App = () => {
+
+  useEffect(() => {
+    const trackVisitor = async () => {
+      try {
+        const response = await axios.post(API_URL + 'analytics/trackVisitor', {
+          ipAddress: '', // Leave this empty, as it will be filled on the server-side
+          userAgent: navigator.userAgent, // Use the user agent string from the browser
+        });
+        console.log('Visitor tracked successfully');
+      } catch (error) {
+        console.error('Error tracking visitor:', error);
+      }
+    };
+
+    trackVisitor();
+  }, []);
+
   return (
     <div className="pageContainer">
       <BrowserRouter>
@@ -40,9 +58,14 @@ const App = () => {
           <Route path="/donationpolicy" exact element={<DonationPolicy />} />
           <Route path="/privacypolicy" exact element={<PrivacyPolicy />} />
           <Route path="/partner" exact element={<Partner />} />
+          <Route path="/managecampaign" exact element={<ManageLanding />} />
           <Route path="/termsofservice" exact element={<TermsOfService />} />
           <Route path="/campaigns" exact element={<ViewCampaigns />} />
           <Route path="/:campaignId" element={<CampaignFrame />} />
+          <Route
+            path="/:campaignId/edit"
+            element={<>{console.log("edit campaign...")}</>}
+          />
         </Routes>
 
         <Footer />

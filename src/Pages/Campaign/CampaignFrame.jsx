@@ -11,11 +11,30 @@ import axios from "axios";
 import { Loading } from "./Loading";
 
 export const CampaignFrame = () => {
+
+ 
+
   const Mobile = useMediaQuery("(max-width:900px)");
 
   //get campaignId from params
   const params = useParams();
   const { campaignId } = params;
+
+  useEffect(() => {
+    const trackPage = async (pageName) => {
+      try {
+        const response = await axios.post(API_URL + 'analytics/trackPageVisit', {
+          pageName: pageName,
+        });
+        console.log('Page tracked successfully');
+      } catch (error) {
+        console.error('Error tracking page:', error);
+      }
+    };
+
+    trackPage(campaignId);
+  }, []);
+
 
   //find campaign from campaigns
   //const campaign = Campaigns.find((campaign) => campaign.uuid == campaignId);
@@ -23,7 +42,7 @@ export const CampaignFrame = () => {
   const [campaign, setCampaign] = useState("");
 
   const getCampaign = async () => {
-    await axios.get(API_URL + campaignId).then((response) => {
+    await axios.get(API_URL + "campaigns/" + campaignId).then((response) => {
       setCampaign(response.data);
     });
   };

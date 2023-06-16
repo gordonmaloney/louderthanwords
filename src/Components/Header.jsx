@@ -71,6 +71,8 @@ export const Header = () => {
             <br />
             <Link to="/partner">PARTNER WITH US ·</Link> <br />
 
+            <Link to="/managecampaign">MANAGE CAMPAIGNS ·</Link> <br />
+
 
             <Link to="/runcampaign">CAMPAIGN TOP TIPS ·</Link> <br />
 

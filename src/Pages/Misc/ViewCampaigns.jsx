@@ -18,7 +18,7 @@ export const ViewCampaigns = () => {
   const [Campaigns, setCampaigns] = useState([]);
 
   const getCampaigns = async () => {
-    await axios.get(API_URL + "all").then((response) => {
+    await axios.get(API_URL + "campaigns/all").then((response) => {
       setCampaigns(response.data);
     });
   };

@@ -26,7 +26,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import axios from "axios";
 import { API_URL } from "../../API";
 import { useNavigate } from "react-router-dom";
-import {IconButton} from "@mui/material";
+import { IconButton } from "@mui/material";
 import { Visibility } from "@mui/icons-material";
 import { VisibilityOff } from "@mui/icons-material";
 
@@ -249,7 +249,7 @@ export const CreateTabs = () => {
 
   const [titleInUse, setTitleInUse] = useState(false);
   const checkIfTitleInUse = async (checkUuid) => {
-    const response = await axios.get(API_URL + "all");
+    const response = await axios.get(API_URL + "campaigns/all");
     if (
       [
         ...response.data,
@@ -806,7 +806,7 @@ export const CreateTabs = () => {
   }, [tooltipOpen]);
 
   const handleLaunch = async () => {
-    await axios.get(API_URL + "all").then((response) => {
+    await axios.get(API_URL + "campaigns/all").then((response) => {
       if (
         [
           ...response.data,
@@ -826,16 +826,15 @@ export const CreateTabs = () => {
         setTitleInUse(true);
       } else {
         setTitleInUse(false);
-        axios.post(API_URL, newCampaign).then(() => {
+        axios.post(API_URL + "campaigns/", newCampaign).then(() => {
           navigate("../" + newCampaign.uuid);
         });
       }
     });
   };
 
-
   //handle showpassword
-  const [showPassword, setShowPassword] = useState(true)
+  const [showPassword, setShowPassword] = useState(true);
 
   const ReviewTab = (
     <TabBody
@@ -905,8 +904,8 @@ export const CreateTabs = () => {
 
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
-              Optional: If you would like to be able to edit your campaign later on, you
-              can set a secure password here to do so.
+              Optional: If you would like to be able to edit your campaign later
+              on, you can set a secure password here to do so.
             </span>
             <TextField
               style={TextFieldStyle}

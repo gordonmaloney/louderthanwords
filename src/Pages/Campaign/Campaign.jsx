@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Campaigns } from "../../Data/DummyCampaigns";
 import { PostcodeInput } from "./PostcodeInput";
@@ -23,9 +23,11 @@ import Box from "@mui/material/Box";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { SendModal } from "./SendModal";
 import { ShareDonateModal } from "./ShareDonateModal";
-
+import axios from "axios";
 import { regions, msps } from "../../Data/MSPData";
 import { MPs } from "../../Data/MPs";
+import { API_URL } from "../../API";
+import EditableDiv from "../../Components/EditableDiv";
 
 const TabStyle = {
   fontFamily: "Fjalla One",
@@ -82,8 +84,8 @@ export const Campaign = ({ campaign }) => {
 
   const [newSubject, setNewSubject] = useState(subject);
   useEffect(() => {
-    setNewSubject(subject)
-  }, [subject])
+    setNewSubject(subject);
+  }, [subject]);
 
   //initialise action target
   const [actionTarget, setActionTarget] = useState("");
@@ -106,7 +108,6 @@ export const Campaign = ({ campaign }) => {
     setPromptAnswers(newPrompts);
   };
 
-
   useEffect(() => {
     initialisePrompts();
   }, []);
@@ -122,6 +123,8 @@ export const Campaign = ({ campaign }) => {
       setNewTemplate((old) => old.replace(`<<${prompt.id}>>`, ""));
     }
   };
+
+  const [extractedStringArray, setExtractedStringArray] = useState([]);
 
   const addCondition = (prompt) => {
     //for undefined
@@ -156,8 +159,6 @@ export const Campaign = ({ campaign }) => {
           new RegExp(`(<<${prompt.id}=yes:)(.*?)(?=>>)`, "i")
         )[2];
 
-        console.log("4) ", extractedString);
-
         //make regex for whole prompt
         let frameExtractionRegex = new RegExp(
           String.raw`<<${prompt.id}=yes:.*?>>`
@@ -167,6 +168,7 @@ export const Campaign = ({ campaign }) => {
         setNewTemplate((old) =>
           old.replace(frameExtractionRegex, extractedString)
         );
+        setExtractedStringArray((old) => [...old, extractedString]);
 
         //remove whole string if no 'yes' condition
         let frameExtractionRegex2 = new RegExp(
@@ -204,6 +206,7 @@ export const Campaign = ({ campaign }) => {
         setNewTemplate((old) =>
           old.replace(frameExtractionRegex, extractedString)
         );
+        setExtractedStringArray((old) => [...old, extractedString]);
 
         //remove 'yes' prompt:
         console.log("remove no option");
@@ -237,8 +240,26 @@ export const Campaign = ({ campaign }) => {
     setIsShareOpen(false);
   };
 
+  console.log(Object.values(promptAnswers));
+
   //send function
   const handleSend = (prop) => {
+    //track send click
+    const handleButtonClick = async () => {
+      try {
+        const payload = {
+          buttonId: campaign.uuid,
+          // Add any other relevant data
+        };
+
+        await axios.post(API_URL + "analytics/logButtonClick", payload);
+        console.log("Button click tracked successfully");
+      } catch (error) {
+        console.error("Failed to track button click:", error);
+      }
+    };
+    handleButtonClick();
+
     //check for channel, compile everything
 
     if (channel == "Twitter") {
@@ -285,6 +306,12 @@ export const Campaign = ({ campaign }) => {
 
     onSendClose();
     setIsShareOpen(true);
+  };
+
+  const [cursorPosition, setCursorPosition] = useState(0);
+
+  const updateCursorPosition = (position) => {
+    setCursorPosition(position);
   };
 
   const NavButtonBox = ({ nextDisabled, send }) => {
@@ -704,14 +731,14 @@ export const Campaign = ({ campaign }) => {
                     </div>
                   );
                 })}
-          
+
                 <NavButtonBox
                   nextDisabled={
                     prompts
                       .filter((prompt) => prompt.required)
                       .filter(
                         (prompt) =>
-                        promptAnswers[prompt.id] == "" ||
+                          promptAnswers[prompt.id] == "" ||
                           promptAnswers[prompt.id] == null ||
                           promptAnswers[prompt.id] == "noOptionSelected"
                       ).length > 0
@@ -750,28 +777,62 @@ export const Campaign = ({ campaign }) => {
                   </>
                 )}
 
+
+                <div style={{ position: "relative" }}>
+             
+                  <div style={{ position: "absolute", display: "none" }}>
+                    <EditableDiv
+                      label={channel == "Email" ? "Body" : "Your Tweet"}
+                      body={newTemplate}
+                      onBodyChange={(e) => {
+                        console.log("tracking: ", e);
+                        setNewTemplate(e);
+                      }}
+                      cursorPosition={cursorPosition}
+                      updateCursorPosition={(e) => {
+                        updateCursorPosition(e);
+                      }}
+                      substrings={[
+                        ...extractedStringArray,
+                        ...Object.values(promptAnswers),
+                      ]}
+                    />
+                  </div>
+                </div>
+
                 <TextField
                   id="template"
                   fullWidth
                   label={channel == "Email" ? "Body" : "Your Tweet"}
                   value={newTemplate}
                   multiline
-                  sx={TextFieldStyle}
+                  sx={{...TextFieldStyle, opacity: 1}}
                   rows={10}
                   onChange={(e) => setNewTemplate(e.target.value)}
-                  inputProps={channel == "Twitter" && {
-                    maxLength:
-                      channel == "Twitter" &&
-                      280
-                  }}
+                  inputProps={
+                    channel == "Twitter" && {
+                      maxLength: channel == "Twitter" && 280,
+                    }
+                  }
                 />
                 {campaign.channel == "Twitter" && (
-            <span style={{ width: "100%", textAlign: "right",
-            textDecoration: newTemplate?.length == 280 && "underline",
-            color: [newTemplate?.length < 250 ? 'black' : newTemplate?.length < 270 ? 'darkred' : "rgba(221,28,26,1)" ]
-            }}>
-              {newTemplate?.length} / 280
-            </span>)}
+                  <span
+                    style={{
+                      width: "100%",
+                      textAlign: "right",
+                      textDecoration: newTemplate?.length == 280 && "underline",
+                      color: [
+                        newTemplate?.length < 250
+                          ? "black"
+                          : newTemplate?.length < 270
+                          ? "darkred"
+                          : "rgba(221,28,26,1)",
+                      ],
+                    }}
+                  >
+                    {newTemplate?.length} / 280
+                  </span>
+                )}
                 <NavButtonBox send />
               </>
             }
