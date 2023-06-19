@@ -3,7 +3,6 @@ import axios from "axios";
 import { API_URL } from "../../API";
 import { AnalyticsChart } from "./AnalyticsChart";
 
-
 export const Analytics = ({ uuid }) => {
   const [analyticsData, setAnalyticsData] = useState(null);
 
@@ -21,21 +20,22 @@ export const Analytics = ({ uuid }) => {
     fetchData();
   }, [uuid]);
 
- 
-  
   return (
-    <div style={{width: '500px', height: '500px'}}>
+    <div>
       {analyticsData ? (
         <div>
-          Analytics - {uuid}
-          <br />
-          <br />
-          Total visits: {analyticsData?.visits?.length}
-          <br />
-          Total sends: {analyticsData?.sendClicks?.length}
-          <br />
-          <AnalyticsChart analyticsData={analyticsData}/>
-
+          <div style={{ fontFamily: "Fjalla One" }}>
+            Total visits: {analyticsData?.visits?.length}
+            <br />
+            Total sends: {analyticsData?.sendClicks?.length}
+            <br />
+            <br />
+            Over time:
+            <br />
+          </div>
+          <center>
+            <AnalyticsChart analyticsData={analyticsData} />
+          </center>
         </div>
       ) : (
         <div>Loading...</div>

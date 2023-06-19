@@ -105,7 +105,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
   });
 
   if (editing && newCampaign.uuid == "") {
-    setNewCampaign({ ...editing, password: "", oldPassword: oldPassword});
+    setNewCampaign({ ...editing, password: "", oldPassword: oldPassword });
   }
 
   const [optionalFields, setOptionalFields] = useState({ prompts: false });
@@ -178,6 +178,13 @@ export const CreateTabs = ({ editing, oldPassword }) => {
       body={
         <>
           <div>
+            <div>
+              This is where you can title your campaign and explain it a little.
+              If you'd like to include a link to where people can find out more
+              about you or your organisation, you can add that in too.
+              <hr />
+            </div>
+
             <span style={{ fontFamily: "Fjalla One" }}>
               Give your campaign a name:
             </span>
@@ -295,6 +302,14 @@ export const CreateTabs = ({ editing, oldPassword }) => {
       title="target"
       body={
         <>
+          <div>
+            Choose who your campaign is targeting. If you pick a bulk target
+            like MPs or MSPs, it will automatically filter by the users'
+            postcodes. You can also set custom targets. If it's on Twitter, a
+            target isn't required.
+            <hr />
+          </div>
+
           <div style={{ marginBottom: "8px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Where do you want to reach your target - Twitter or Email?
@@ -340,12 +355,11 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                 Members of the Scottish Parliament
               </MenuItem>
             </TextField>
-            </div>
+          </div>
 
+          <div style={{ display: newCampaign.channel == "Select" && "none" }}>
             <div>
-              <span style={{ fontFamily: "Fjalla One" }}>
-                Custom target:
-              </span>
+              <span style={{ fontFamily: "Fjalla One" }}>Custom target:</span>
               <br />
               <Grid container spacing={1}>
                 <Grid item xs={12} sm={6}>
@@ -451,7 +465,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                 </div>{" "}
               </div>
             }
-
+          </div>
           <div
             style={{
               margin: "10px 0",
@@ -459,6 +473,9 @@ export const CreateTabs = ({ editing, oldPassword }) => {
             }}
           >
             <h3 style={{ margin: 0, fontFamily: "Fjalla One" }}>Add a BCC:</h3>
+            <p style={{ margin: 0 }}>
+              This can be a useful way to track how many emails are sent!
+            </p>
             <TextField
               fullWidth
               label="And an address to copy in to user's emails"
@@ -496,14 +513,14 @@ export const CreateTabs = ({ editing, oldPassword }) => {
       title="prompts"
       body={
         <>
-          <p>
+          <div>
             Prompts allow you to ensure a personal touch in the messages that
             get sent. You can ask users a question - such as "Why does this
             campaign matter to you?" - and then incorporate their answer into
             the template. You can also ask yes/no questions, and have
             conditional content in the template based on the answer.
-          </p>
-
+            <hr />
+          </div>
           {
             //render existing prompts
           }
@@ -676,95 +693,103 @@ export const CreateTabs = ({ editing, oldPassword }) => {
       title="Template"
       body={
         <>
-          <p>
+          <div>
             Draft your template message here. If you've created prompt
             questions, you can use the buttons below to place where you'd like
             the user's answers to go.
-          </p>
-          Your prompts:
-          <br />
-          {newCampaign.channel == "Twitter" &&
-            (newCampaign.target.length > 0 ||
-              newCampaign.bulkTarget !== "select") && (
-              <Grid container alignItems="center">
-                <Grid item>
-                  TargetHandle: the twitter username of your target
-                </Grid>
-                <Grid item>
-                  <Button
-                    // size="small"
-                    sx={{
-                      ...BtnStyle,
-                      transform: "scale(0.7)",
-                      width: "100px",
-                      display: "inline !important",
-                    }}
-                    onClick={() =>
-                      setNewCampaign({
-                        ...newCampaign,
-                        template: `${newCampaign.template}<<TargetHandle>>`,
-                      })
-                    }
-                  >
-                    Insert
-                  </Button>
-                </Grid>
-              </Grid>
-            )}
-          {newCampaign.prompts.map((prompt) => (
-            <Grid container alignItems="center">
-              <Grid item>
-                {prompt.id}: {prompt.question}
-              </Grid>
+            <hr />
+          </div>
 
-              <Grid
-                item
-                sx={{
-                  display: "flex",
-                  alignContent: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {prompt.answerType == "text" && (
-                  <Button
-                    // size="small"
-                    sx={{
-                      ...BtnStyle,
-                      transform: "scale(0.7)",
-                      width: "100px",
-                      display: "inline !important",
-                    }}
-                    onClick={() =>
-                      setNewCampaign({
-                        ...newCampaign,
-                        template: `${newCampaign.template}<<${prompt.id}>>`,
-                      })
-                    }
-                  >
-                    Insert
-                  </Button>
-                )}
-                {prompt.answerType == "yesno" && (
-                  <Button
-                    sx={{
-                      ...BtnStyle,
-                      transform: "scale(0.7)",
-                      width: "100px",
-                      display: "inline !important",
-                    }}
-                    onClick={() =>
-                      setNewCampaign({
-                        ...newCampaign,
-                        template: `${newCampaign.template}<<${prompt.id}=yes:conditional text for 'yes' here...>><<${prompt.id}=no:conditional text for 'no' here...>>`,
-                      })
-                    }
-                  >
-                    Insert
-                  </Button>
-                )}
-              </Grid>
-            </Grid>
-          ))}
+          {(newCampaign.channel == "Twitter" &&
+            newCampaign.target.length > 0) ||
+            (newCampaign.prompts.length > 0 && (
+              <>
+                Your prompts:
+                <br />
+                {newCampaign.channel == "Twitter" &&
+                  (newCampaign.target.length > 0 ||
+                    newCampaign.bulkTarget !== "select") && (
+                    <Grid container alignItems="center">
+                      <Grid item>
+                        TargetHandle: the twitter username of your target
+                      </Grid>
+                      <Grid item>
+                        <Button
+                          // size="small"
+                          sx={{
+                            ...BtnStyle,
+                            transform: "scale(0.7)",
+                            width: "100px",
+                            display: "inline !important",
+                          }}
+                          onClick={() =>
+                            setNewCampaign({
+                              ...newCampaign,
+                              template: `${newCampaign.template}<<TargetHandle>>`,
+                            })
+                          }
+                        >
+                          Insert
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  )}
+                {newCampaign.prompts.map((prompt) => (
+                  <Grid container alignItems="center">
+                    <Grid item>
+                      {prompt.id}: {prompt.question}
+                    </Grid>
+
+                    <Grid
+                      item
+                      sx={{
+                        display: "flex",
+                        alignContent: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {prompt.answerType == "text" && (
+                        <Button
+                          // size="small"
+                          sx={{
+                            ...BtnStyle,
+                            transform: "scale(0.7)",
+                            width: "100px",
+                            display: "inline !important",
+                          }}
+                          onClick={() =>
+                            setNewCampaign({
+                              ...newCampaign,
+                              template: `${newCampaign.template}<<${prompt.id}>>`,
+                            })
+                          }
+                        >
+                          Insert
+                        </Button>
+                      )}
+                      {prompt.answerType == "yesno" && (
+                        <Button
+                          sx={{
+                            ...BtnStyle,
+                            transform: "scale(0.7)",
+                            width: "100px",
+                            display: "inline !important",
+                          }}
+                          onClick={() =>
+                            setNewCampaign({
+                              ...newCampaign,
+                              template: `${newCampaign.template}<<${prompt.id}=yes:conditional text for 'yes' here...>><<${prompt.id}=no:conditional text for 'no' here...>>`,
+                            })
+                          }
+                        >
+                          Insert
+                        </Button>
+                      )}
+                    </Grid>
+                  </Grid>
+                ))}
+              </>
+            ))}
           {newCampaign.channel == "Email" && (
             <TextField
               variant="outlined"
@@ -865,6 +890,13 @@ export const CreateTabs = ({ editing, oldPassword }) => {
       title={`Review & ${!editing ? "save" : "launch"}`}
       body={
         <>
+          <div>
+            Almost there! Set the URL for your campaign here. You can also set a
+            password to be able to edit it and check the performance later on.
+            Make sure to preview the campaign too, and check that it all makes
+            sense and looks right!
+            <hr />
+          </div>
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
               Campaign URL:{" "}
@@ -972,8 +1004,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
           </div>
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
-              Use the button below to preview what your campaign will look like
-              - and take the opportunity to proof-read it!
+              Preview your campaign:
             </span>
             <br />
             <center>
@@ -988,8 +1019,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
 
           <div style={{ marginBottom: "10px" }}>
             <span style={{ fontFamily: "Fjalla One" }}>
-              Once you're happy with everything, use the button below to launch
-              your campaign:
+              All good? Launch here:
             </span>
             <br />
             <center>
@@ -1007,7 +1037,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
       }
     />
   );
-console.log(newCampaign)
+  console.log(newCampaign);
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => {
     setIsOpen(false);

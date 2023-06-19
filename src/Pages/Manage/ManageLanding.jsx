@@ -4,11 +4,14 @@ import { Analytics } from "./Analytics";
 import { CreateTabs } from "../Create/CreateTabs";
 import axios from "axios";
 import { API_URL } from "../../API";
-import { Button } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import { BtnStyle } from "../../MUIStyles";
 import { ConfirmDeleteModal } from "./ConfirmDeleteModal";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const ManageLanding = () => {
+  const Mobile = useMediaQuery("(max-width:900px)");
+
   const [isOpen, setIsOpen] = useState(false);
   const onClose = () => {
     setIsOpen(false);
@@ -41,7 +44,7 @@ export const ManageLanding = () => {
         <center>
           <h2
             style={{
-                paddingTop: "50px",
+              paddingTop: "50px",
               fontFamily: "Fjalla One",
               margin: "0 0 20px 0",
             }}
@@ -64,30 +67,69 @@ export const ManageLanding = () => {
         style={{
           minHeight: "100vh",
           display: "flex",
-          flexDirection: "column",
-          placeContent: "center",
+          justifyContent: "center",
+          alignContent: "center",
         }}
       >
-        <center>
-          <h2
-            style={{
-              fontFamily: "Fjalla One",
-              margin: "0 0 20px 0",
-            }}
-          ></h2>
-        </center>
+        <Grid
+          spacing={!Mobile && 1}
+          container
+          sx={{
+            width: Mobile ? "100%" : "90%",
+            margin: "0 auto",
+            marginTop: "100px",
+          }}
+        >
+          <Grid item xs={12} sx={{maxWidth: Mobile && "90%", margin: Mobile && "0 5%"}}>
+            <h2
+              style={{
+                fontFamily: "Fjalla One",
+                margin: "0 0 20px 0",
+              }}
+            >
+              Manage your campaign
+            </h2>
+          </Grid>
+          <Grid item xs={12} md={5}  sx={{maxWidth: Mobile && "90%", margin: Mobile && "0 5%"}}>
+            <h3
+              style={{
+                fontFamily: "Fjalla One",
+                margin: "0 0 20px 0",
+              }}
+            >
+              Performance:
+            </h3>
+            <Analytics uuid={uuid} />
 
-        <div style={{ marginBottom: "200px" }}>
-          <CreateTabs editing={campaign} oldPassword={oldPassword} />
-          <Analytics uuid={uuid} />
-          <Button style={BtnStyle} onClick={() => setIsOpen(true)}>
-            Delete campaign
-          </Button>
-        </div>
+            <center>
+              <Button
+                style={{ ...BtnStyle, marginTop: "40px" }}
+                onClick={() => setIsOpen(true)}
+              >
+                Delete campaign
+              </Button>
+            </center>
+          </Grid>
 
-        <ConfirmDeleteModal isOpen={isOpen} onClose={onClose} 
-        oldPassword={oldPassword}
-        uuid={uuid}
+          <Grid item xs={12} md={7} sx={{}}>
+          <h3
+              style={{
+                fontFamily: "Fjalla One",
+                margin: "0 0 20px 0",
+                maxWidth: Mobile && "90%", margin: Mobile && "0 5%"
+              }}
+            >
+              Edit your campaign:
+            </h3>
+            <CreateTabs editing={campaign} oldPassword={oldPassword} />
+          </Grid>
+        </Grid>
+
+        <ConfirmDeleteModal
+          isOpen={isOpen}
+          onClose={onClose}
+          oldPassword={oldPassword}
+          uuid={uuid}
         />
       </div>
     );

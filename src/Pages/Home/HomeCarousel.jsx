@@ -60,9 +60,9 @@ function Item(props) {
     >
       <div
         style={{
-          width: "100%",
+          width: "104%",
           height: "100%",
-          marginLeft: '0px',
+          marginLeft: '-2%',
           zIndex: 1,
           background: `url(${props.item.imgSrc})`,
           backgroundSize: "cover",
