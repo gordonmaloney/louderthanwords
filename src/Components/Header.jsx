@@ -62,6 +62,7 @@ export const Header = () => {
               fontSize: "1.4em",
               lineHeight: "2.2em",
             }}
+            onClick={() => setDrawerOpen(false)}
           >
             <Link to="../home">HOME ·</Link>
             <br />

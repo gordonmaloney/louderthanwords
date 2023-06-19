@@ -8,7 +8,17 @@ import { Paper, Button } from "@mui/material";
 export const CampaignCarousel = () => {
   {
     return (
-      <Carousel interval="4000" navButtonsAlwaysVisible>
+      <Carousel
+        interval="4000"
+        navButtonsAlwaysVisible
+        navButtonsWrapperProps={{
+          // Move the buttons to the bottom. Unsetting top here to override default style.
+          style: {
+            bottom: "-140px",
+            top: "unset",
+          },
+        }}
+      >
         {Campaigns.map((item, i) => (
           <Item key={i} item={item} />
         ))}

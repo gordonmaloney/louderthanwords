@@ -35,7 +35,14 @@ export const HomeCarousel = ({loaded}) => {
       <center>
         <Carousel 
         navButtonsAlwaysVisible
-        height={"95vh"} width={"100vw"} interval="8000">
+        height={"95vh"} width={"100vw"} interval="8000"
+        navButtonsWrapperProps={{   // Move the buttons to the bottom. Unsetting top here to override default style.
+          style: {
+              bottom: '-150px',
+              top: 'unset'
+          }
+      }} 
+        >
           {items.map((item, i) => (
             <Item key={i} item={item} />
           ))}
