@@ -7,33 +7,33 @@ import { IconButton, Button } from "@mui/material";
 import axios from "axios";
 import { API_URL } from "../../API";
 
-export const Login = ({setLoggedIn, setUuid, setOldPassword}) => {
+export const Login = ({ setLoggedIn, setUuid, setOldPassword }) => {
   const Mobile = useMediaQuery("(max-width:600px)");
 
   const [logInData, setLogInData] = useState({ uuid: "", password: "" });
   const [showPassword, setShowPassword] = useState(true);
 
-
-
   const handleLogIn = async () => {
     //extract uuid from url
     const payload = {
-      uuid: logInData.uuid.replace(window.location.host + "/", ""),
+      uuid: logInData.uuid
+        .replace(window.location.host.replace("https://www.") + "/", "")
+        .replace("https://www.", "")
+        .replace("www.", ""),
       password: logInData.password,
     };
 
     try {
       const response = await axios.post(API_URL + "campaigns/login", payload);
       console.log(response.status);
-      response.status == '200' && setLoggedIn(true)
-      response.status == '200' && setUuid(payload.uuid)
-      response.status == "200" && setOldPassword(logInData.password)
+      response.status == "200" && setLoggedIn(true);
+      response.status == "200" && setUuid(payload.uuid);
+      response.status == "200" && setOldPassword(logInData.password);
     } catch (err) {
       console.log(err.response.status);
     }
   };
 
-  console.log(window.location.host);
   return (
     <Box
       sx={{
@@ -45,7 +45,7 @@ export const Login = ({setLoggedIn, setUuid, setOldPassword}) => {
         paddingBottom: "0",
         width: "50%",
         minWidth: Mobile && "100vw",
-        borderRadius: "15px",
+        borderRadius: Mobile ? 0 : "15px",
         minHeight: "300px",
         marginBottom: "150px",
       }}

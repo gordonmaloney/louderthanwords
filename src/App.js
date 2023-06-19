@@ -22,19 +22,19 @@ import { Contact } from "./Pages/Misc/Contact";
 import { FAQ } from "./Pages/Misc/FAQ";
 import { RunCampaign } from "./Pages/Misc/RunCampaign";
 import { API_URL } from "./API";
+import { ConfirmDeleteLanding } from "./Pages/Manage/ConfirmDeleteLanding";
 
 const App = () => {
-
   useEffect(() => {
     const trackVisitor = async () => {
       try {
-        const response = await axios.post(API_URL + 'analytics/trackVisitor', {
-          ipAddress: '', // Leave this empty, as it will be filled on the server-side
+        const response = await axios.post(API_URL + "analytics/trackVisitor", {
+          ipAddress: "", // Leave this empty, as it will be filled on the server-side
           userAgent: navigator.userAgent, // Use the user agent string from the browser
         });
-        console.log('Visitor tracked successfully');
+        console.log("Visitor tracked successfully");
       } catch (error) {
-        console.error('Error tracking visitor:', error);
+        console.error("Error tracking visitor:", error);
       }
     };
 
@@ -62,6 +62,10 @@ const App = () => {
           <Route path="/termsofservice" exact element={<TermsOfService />} />
           <Route path="/campaigns" exact element={<ViewCampaigns />} />
           <Route path="/:campaignId" element={<CampaignFrame />} />
+          <Route
+            path="/deletedsuccessfully"
+            element={<ConfirmDeleteLanding />}
+          />
           <Route
             path="/:campaignId/edit"
             element={<>{console.log("edit campaign...")}</>}

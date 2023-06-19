@@ -41,6 +41,7 @@ export const ManageLanding = () => {
         <center>
           <h2
             style={{
+                paddingTop: "50px",
               fontFamily: "Fjalla One",
               margin: "0 0 20px 0",
             }}

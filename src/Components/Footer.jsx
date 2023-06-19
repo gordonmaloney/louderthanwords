@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
 import { Link } from "react-router-dom";
 import useMediaQuery from '@mui/material/useMediaQuery';
-
+import {BreachEmail} from '../Emails'
 
 
 export const Footer = () => {
@@ -38,7 +38,7 @@ export const Footer = () => {
           colonialism, homophobia, transphobia or other bigotries. But as a
           volunteer-based team, we cannot vet every campaign. If you believe a
           campaign breeches our terms of service, please get in touch here:
-          breach@louderthanwords.org
+          {BreachEmail}
         </Grid>
       </Grid>
     </div>

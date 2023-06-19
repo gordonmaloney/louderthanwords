@@ -53,7 +53,6 @@ function Item(props) {
         width: "100vw",
         paddingTop: "50px",
         margin: "0",
-        marginLeft: '-8px',
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

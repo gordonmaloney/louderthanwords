@@ -322,6 +322,9 @@ export const CreateTabs = ({ editing, oldPassword }) => {
               display: newCampaign.channel == "Select" && "none",
             }}
           >
+            <span style={{ fontFamily: "Fjalla One" }}>
+              Filter target by postcode:
+            </span>
             <TextField
               fullWidth
               value={newCampaign.bulkTarget}
@@ -337,10 +340,11 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                 Members of the Scottish Parliament
               </MenuItem>
             </TextField>
+            </div>
 
             <div>
               <span style={{ fontFamily: "Fjalla One" }}>
-                Who or what is the target of the campaign?
+                Custom target:
               </span>
               <br />
               <Grid container spacing={1}>
@@ -447,7 +451,6 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                 </div>{" "}
               </div>
             }
-          </div>
 
           <div
             style={{

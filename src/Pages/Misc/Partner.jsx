@@ -4,7 +4,7 @@ import Devices from "../../Images/devices3.png";
 import RaisedFists from "../../Images/raised fistslong.png";
 import Megaphone from "../../Images/megaphone frame.png";
 import useMediaQuery from "@mui/material/useMediaQuery";
-
+import { PartnerEmail } from "../../Emails";
 export const Partner = () => {
   const Mobile = useMediaQuery("(max-width:900px)");
   const Width500  = useMediaQuery("(max-width:500px)");
@@ -121,7 +121,7 @@ export const Partner = () => {
                 discuss how we can work together. If you're interested in
                 becoming a partner and creating a customized version of Louder
                 Than Words, please reach out to us at
-                partner@louderthanwords.com. Our team will be delighted to
+                {PartnerEmail}. Our team will be delighted to
                 connect with you and explore the possibilities.
               </p>
             </Grid>
@@ -137,9 +137,7 @@ export const Partner = () => {
                 <img src={Devices} width="80%" />
               </center>
               <p style={{marginBottom: Width500 ? "250px" : Mobile ? "150px" : ''}}>
-                Let's make a difference together. Join us in the fight for
-                change through impactful campaigns. Partner with Louder Than
-                Words today!
+
               </p>
             </Grid>
           </Grid>

@@ -67,7 +67,7 @@ export const ConfirmDeleteModal = ({ uuid, oldPassword, isOpen, onClose }) => {
 
     const response = await axios.post(API_URL + "campaigns/delete/" + uuid, {password: oldPassword})
 
-    navigate("../home")
+    navigate("../deletedsuccessfully")
     
   };
 
@@ -100,9 +100,11 @@ export const ConfirmDeleteModal = ({ uuid, oldPassword, isOpen, onClose }) => {
         <TextField
           style={TextFieldStyle}
           value={value}
+          fullWidth
           label="Confirm"
           onChange={(e) => setValue(e.target.value)}
         />
+        <br/><br/>
         <center>
           <Button
             disabled={value !== "delete"}
