@@ -95,7 +95,7 @@ export const Campaigns = [
   {
     uuid: "naetransphobia",
     blurb:
-      "Nobody, anywhere, ever, should be forced to have a child they don't want\n\nAs resurgent, far-right, misogynist attacks on reproductive health step up, it is more important than ever that MPs stand up and vocally defend the right to choose.\n\nWill you send a tweet to your MP and ask what they're doing to defend the right to safe and legal abortion?",
+      "Demand MSPs stand up to protect the rights of Scotland's trans people - no matter what.",
     channel: "Email",
     host: "Iona Barber",
     template:

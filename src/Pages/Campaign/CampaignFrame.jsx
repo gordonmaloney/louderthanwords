@@ -9,6 +9,7 @@ import { BtnStyle } from "../../MUIStyles";
 import { API_URL } from "../../API";
 import axios from "axios";
 import { Loading } from "./Loading";
+import { Helmet } from "react-helmet";
 
 export const CampaignFrame = () => {
 
@@ -55,6 +56,12 @@ export const CampaignFrame = () => {
 
   return (
     <div style={{ minHeight: "100vh" }}>
+
+      <Helmet>
+        <title>Louder Than Words: {campaign.title}</title>
+        <meta name="description" content={campaign.blurb} />
+
+      </Helmet>
       <Grid
         spacing={!Mobile && 2}
         container

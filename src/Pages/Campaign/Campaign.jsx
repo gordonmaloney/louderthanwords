@@ -804,7 +804,7 @@ export const Campaign = ({ campaign }) => {
                   id="template"
                   fullWidth
                   label={channel == "Email" ? "Body" : "Your Tweet"}
-                  value={newTemplate}
+                  value={newTemplate || ""}
                   multiline
                   sx={{...TextFieldStyle, opacity: 1}}
                   rows={10}

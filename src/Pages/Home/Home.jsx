@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Grid } from "@mui/material";
 import WomanPhone from "../../Images/woman phone.png";
 import Devices from "../../Images/devices2.png";
@@ -19,25 +19,29 @@ export const Home = () => {
   const Small = useMediaQuery("(max-width:600px)");
 
   const Mobile = useMediaQuery("(max-width:900px)");
+  const Med = useMediaQuery("(max-width:1100px)");
 
-  const [loaded,setLoaded] = useState(false)
-  
+  const [loaded, setLoaded] = useState(false);
 
   if (!loaded) {
     return (
       <>
-      <Loading />
+        <Loading />
 
-      <img src={Carousel1} onLoad={() => setLoaded(true)} style={{opacity: '0 !important', height: '1px', width: '1px'}} />
+        <img
+          src={Carousel1}
+          onLoad={() => setLoaded(true)}
+          style={{ opacity: "0 !important", height: "1px", width: "1px" }}
+        />
       </>
-    )
+    );
   }
 
   return (
     <div>
       <div className="homeContainer">
         <section className="homeChild">
-          <HomeCarousel/>
+          <HomeCarousel />
         </section>
         <section className="homeChild">
           <Grid container sx={{ padding: "0 8%" }}>
@@ -121,17 +125,16 @@ export const Home = () => {
           </Grid>
         </section>
         <section className="homeChild">
-          <Grid container sx={{ padding: "0 8%" }}>
+          <Grid container sx={{ padding: "0 8%", paddingTop: Med && "150px" }}>
             <Grid
               item
               xs={12}
-              sm={6}
+              md={6}
               sx={{
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                marginBottom: !Small ? "150px" : "",
               }}
             >
               <p
@@ -152,31 +155,39 @@ export const Home = () => {
                 just a few clicks, you can mobilize your supporters and create a
                 wave of change.
               </p>
-              <Link to="/create">
-                <Button size="large" sx={BtnStyle}>
-                  Start a campaign
-                </Button>
-              </Link>
-              <br />
-              <Link to="/campaigns">
-                <Button size="large" sx={BtnStyle}>
-                  View campaigns
-                </Button>
-              </Link>
-              <br />
-              <Link to="/partner">
-                <Button size="large" sx={BtnStyle}>
-                  Partner with us
-                </Button>
-              </Link>
+
+              <Grid container spacing={4} justifyContent={"center"} alignContent={"center"}>
+                <Grid item>
+                  <Link to="/create">
+                    <Button size="large" sx={BtnStyle}>
+                      Start a campaign
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  <Link to="/campaigns">
+                    <Button size="large" sx={BtnStyle}>
+                      View campaigns
+                    </Button>
+                  </Link>
+                </Grid>
+                <Grid item>
+                  {" "}
+                  <Link to="/partner">
+                    <Button size="large" sx={BtnStyle}>
+                      Partner with us
+                    </Button>
+                  </Link>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid
               item
               xs={12}
-              sm={6}
+              md={6}
               sx={{
-                marginBottom: Mobile ? "230px" : "0",
-                marginTop: Mobile ? "20px" : "0",
+                marginBottom: Small ? "230px" : "0",
+                marginTop: Mobile ? "40px" : "0",
               }}
             >
               <center>

@@ -26,20 +26,24 @@ html, body, #root {
   display: flex;
   flex-direction: column;
  }
-.pageContainer {
-position: relative;
-min-height: 100vh;
-}
+
 
 
 .landingBG {
   height: 100vh;
-  width: 100vw;
+  width: 100%;
   background-image: url('./Images/devices\ BW.png');
   background-size: cover;
   background-repeat: no-repeat;
-  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+
   margin: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none
+}
+.landingBG::-webkit-scrollbar {
+  display: none;
 }
 
 .landingCont {
@@ -47,6 +51,7 @@ min-height: 100vh;
   width: 100vw;
 overflow: hidden !important;
 background: linear-gradient(90deg, rgba(221,28,26,1) 50%, rgba(221,28,26,0) 100%);
+
 }
 
 
@@ -60,7 +65,7 @@ height: 100vh;
   background-position: top left;
   
 background-repeat: no-repeat;
-overflow: hidden;
+overflow: hidden !important;
 
 }
 
@@ -69,15 +74,21 @@ overflow: hidden;
 @media (max-width: 500px) {
   .landingHeader {
     background-size: 130% ;
+    overflow: hidden !important;
+
   }
 }
 @media (max-width: 400px) {
   .landingHeader {
     background-size: 160% ;
+    overflow: hidden !important;
+
   }
 }
 
 .landingDialogue {
+  overflow: hidden !important;
+
   position: absolute;
   top: 50%;
   right: 15%;

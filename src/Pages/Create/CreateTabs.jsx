@@ -194,7 +194,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
               id="campaignTitle"
               label="Campaign Title"
               variant="outlined"
-              value={newCampaign.title}
+              value={newCampaign.title || ""}
               sx={TextFieldStyle}
               onChange={(e) =>
                 setNewCampaign({ ...newCampaign, title: e.target.value })
@@ -214,7 +214,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                 required
                 variant="outlined"
                 sx={{ ...TextFieldStyle, width: "49%" }}
-                value={newCampaign.host}
+                value={newCampaign.host || ""}
                 onChange={(e) =>
                   setNewCampaign({ ...newCampaign, host: e.target.value })
                 }
@@ -224,7 +224,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                 label="Link to web or socials"
                 variant="outlined"
                 sx={{ ...TextFieldStyle, width: "49%" }}
-                value={newCampaign.hostLink}
+                value={newCampaign.hostLink || ""}
                 onChange={(e) =>
                   setNewCampaign({ ...newCampaign, hostLink: e.target.value })
                 }
@@ -245,7 +245,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
               multiline
               rows={3}
               sx={TextFieldStyle}
-              value={newCampaign.blurb}
+              value={newCampaign.blurb || ""}
               onChange={(e) =>
                 setNewCampaign({ ...newCampaign, blurb: e.target.value })
               }
@@ -368,7 +368,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                     label="Name"
                     sx={TextFieldStyle}
                     variant="outlined"
-                    value={newTarget.name}
+                    value={newTarget.name || ""}
                     onChange={(e) =>
                       setNewTarget({ ...newTarget, name: e.target.value })
                     }
@@ -382,7 +382,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                     }
                     sx={TextFieldStyle}
                     variant="outlined"
-                    value={newTarget.handle}
+                    value={newTarget.handle || ""}
                     onChange={(e) =>
                       setNewTarget({ ...newTarget, handle: e.target.value })
                     }
@@ -481,7 +481,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
               label="And an address to copy in to user's emails"
               sx={TextFieldStyle}
               variant="outlined"
-              value={newTarget.bcc}
+              value={newTarget.bcc || ""}
               onChange={(e) =>
                 setNewTarget({ ...newTarget, bcc: e.target.value })
               }
@@ -582,7 +582,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                   fullWidth
                   label="Question"
                   variant="outlined"
-                  value={newPrompt.question}
+                  value={newPrompt.question || ""}
                   sx={TextFieldStyle}
                   onChange={(e) =>
                     setNewPrompt({ ...newPrompt, question: e.target.value })
@@ -645,7 +645,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
                   label="Prompt ID"
                   sx={TextFieldStyle}
                   variant="outlined"
-                  value={newPrompt.id}
+                  value={newPrompt.id || ""}
                   onChange={(e) =>
                     setNewPrompt({ ...newPrompt, id: e.target.value })
                   }
@@ -794,7 +794,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
             <TextField
               variant="outlined"
               fullWidth
-              value={newCampaign.subject}
+              value={newCampaign.subject  || ""}
               onChange={(e) =>
                 setNewCampaign({ ...newCampaign, subject: e.target.value })
               }
@@ -806,7 +806,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
             sx={TextFieldStyle}
             label="Template"
             variant="outlined"
-            value={newCampaign.template}
+            value={newCampaign.template || ""}
             fullWidth
             multiline
             rows={5}
@@ -944,7 +944,7 @@ export const CreateTabs = ({ editing, oldPassword }) => {
               style={TextFieldStyle}
               fullWidth
               disabled={editing}
-              value={newCampaign.uuid}
+              value={newCampaign.uuid || ""}
               onChange={(e) =>
                 setNewCampaign({ ...newCampaign, uuid: e.target.value })
               }
