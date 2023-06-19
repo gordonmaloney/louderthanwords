@@ -149,7 +149,8 @@ overflow: hidden !important;
 }
 
 .footer {
-  transform: translate(0, -100%);
+transform: translate(0, -100%);
+
   width: 94%;
   background-color: #537A8B;
   font-family: "Fjalla One";

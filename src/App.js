@@ -43,44 +43,44 @@ const App = () => {
   }, []);
 
   return (
-    <>
-        <Helmet>
-          <title>Louder Than Words</title>
-          <meta name="description" content="Demand action - make impact" />
-        </Helmet>
-        <BrowserRouter>
-          <Header />
+    <div className="pageContainer">
+      <Helmet>
+        <title>Louder Than Words</title>
+        <meta name="description" content="Demand action - make impact" />
+      </Helmet>
+      <BrowserRouter>
+        <Header />
 
-          <Routes>
-            <Route path="/" element={<Landing />} />
+        <Routes>
+          <Route path="/" element={<Landing />} />
 
-            <Route path="/home" exact element={<Home />} />
+          <Route path="/home" exact element={<Home />} />
 
-            <Route path="/contact" exact element={<Contact />} />
-            <Route path="/donate" exact element={<Donate />} />
-            <Route path="/faq" exact element={<FAQ />} />
-            <Route path="/runcampaign" exact element={<RunCampaign />} />
-            <Route path="/create" exact element={<Create />} />
-            <Route path="/donationpolicy" exact element={<DonationPolicy />} />
-            <Route path="/privacypolicy" exact element={<PrivacyPolicy />} />
-            <Route path="/partner" exact element={<Partner />} />
-            <Route path="/managecampaign" exact element={<ManageLanding />} />
-            <Route path="/termsofservice" exact element={<TermsOfService />} />
-            <Route path="/campaigns" exact element={<ViewCampaigns />} />
-            <Route path="/:campaignId" element={<CampaignFrame />} />
-            <Route
-              path="/deletedsuccessfully"
-              element={<ConfirmDeleteLanding />}
-            />
-            <Route
-              path="/:campaignId/edit"
-              element={<>{console.log("edit campaign...")}</>}
-            />
-          </Routes>
+          <Route path="/contact" exact element={<Contact />} />
+          <Route path="/donate" exact element={<Donate />} />
+          <Route path="/faq" exact element={<FAQ />} />
+          <Route path="/runcampaign" exact element={<RunCampaign />} />
+          <Route path="/create" exact element={<Create />} />
+          <Route path="/donationpolicy" exact element={<DonationPolicy />} />
+          <Route path="/privacypolicy" exact element={<PrivacyPolicy />} />
+          <Route path="/partner" exact element={<Partner />} />
+          <Route path="/managecampaign" exact element={<ManageLanding />} />
+          <Route path="/termsofservice" exact element={<TermsOfService />} />
+          <Route path="/campaigns" exact element={<ViewCampaigns />} />
+          <Route path="/:campaignId" element={<CampaignFrame />} />
+          <Route
+            path="/deletedsuccessfully"
+            element={<ConfirmDeleteLanding />}
+          />
+          <Route
+            path="/:campaignId/edit"
+            element={<>{console.log("edit campaign...")}</>}
+          />
+        </Routes>
 
-          <Footer />
-        </BrowserRouter>{" "}
-    </>
+        <Footer />
+      </BrowserRouter>{" "}
+    </div>
   );
 };
 
