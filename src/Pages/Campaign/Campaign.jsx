@@ -264,7 +264,7 @@ export const Campaign = ({ campaign }) => {
 
     if (channel == "Twitter") {
       let sendLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        newTemplate.replace("#", "%23").replace(/\n/g, "%0A")
+        newTemplate
       )}`;
 
       window.open(sendLink);
@@ -276,7 +276,7 @@ export const Campaign = ({ campaign }) => {
       )}${fetchedTargets.map(
         (targ) => targ.email + `,`
       )}?subject=${newSubject}&bcc=${bcc ? bcc : ""}&body=${encodeURIComponent(
-        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+        newTemplate
       )}`;
 
       window.open(sendLink);
@@ -288,7 +288,7 @@ export const Campaign = ({ campaign }) => {
       )}${fetchedTargets.map(
         (targ) => targ.email + `,`
       )}&su=${newSubject}&bcc=${bcc ? bcc : ""}&body=${encodeURIComponent(
-        newTemplate.replace("%", "%25").replace(/\n/g, "%0A") + "%0A%0A"
+        newTemplate
       )}`;
       window.open(sendLink);
     }
@@ -529,11 +529,22 @@ export const Campaign = ({ campaign }) => {
     }
   }, [constituency, scotConstituency]);
 
+
+  //logic to stop prompts being highlighted every time they're saved
+  const [promptsChanged, setPromptsChanged] = useState(false)
+  useEffect(() => {
+    setPromptsChanged(true)
+  }, [promptAnswers])
+
+
+
   //return loading screen if campaign not loaded
   if (!campaign) {
     return <>Loading...</>;
   }
 
+
+  
   return (
     <Box
       sx={{
@@ -581,7 +592,6 @@ export const Campaign = ({ campaign }) => {
                     .filter((prompt) => prompt.required)
                     .filter(
                       (prompt) =>
-                        promptAnswers[prompt.id] == "" ||
                         promptAnswers[prompt.id] == null ||
                         promptAnswers[prompt.id] == "noOptionSelected"
                     ).length > 0 ||
@@ -738,7 +748,6 @@ export const Campaign = ({ campaign }) => {
                       .filter((prompt) => prompt.required)
                       .filter(
                         (prompt) =>
-                          promptAnswers[prompt.id] == "" ||
                           promptAnswers[prompt.id] == null ||
                           promptAnswers[prompt.id] == "noOptionSelected"
                       ).length > 0
@@ -777,25 +786,20 @@ export const Campaign = ({ campaign }) => {
                   </>
                 )}
 
-
                 <div style={{ position: "relative" }}>
-             
-                  <div style={{ position: "absolute", display: "none" }}>
+                  <div style={{}}>
                     <EditableDiv
                       label={channel == "Email" ? "Body" : "Your Tweet"}
                       body={newTemplate}
                       onBodyChange={(e) => {
-                        console.log("tracking: ", e);
+                        setPromptsChanged(false)
                         setNewTemplate(e);
-                      }}
-                      cursorPosition={cursorPosition}
-                      updateCursorPosition={(e) => {
-                        updateCursorPosition(e);
                       }}
                       substrings={[
                         ...extractedStringArray,
                         ...Object.values(promptAnswers),
-                      ]}
+                      ].filter((obj) => obj !== String)}
+                      promptsChanged={promptsChanged}
                     />
                   </div>
                 </div>
@@ -806,7 +810,7 @@ export const Campaign = ({ campaign }) => {
                   label={channel == "Email" ? "Body" : "Your Tweet"}
                   value={newTemplate || ""}
                   multiline
-                  sx={{...TextFieldStyle, opacity: 1}}
+                  sx={{ ...TextFieldStyle, opacity: 1, display: "none" }}
                   rows={10}
                   onChange={(e) => setNewTemplate(e.target.value)}
                   inputProps={
@@ -815,24 +819,7 @@ export const Campaign = ({ campaign }) => {
                     }
                   }
                 />
-                {campaign.channel == "Twitter" && (
-                  <span
-                    style={{
-                      width: "100%",
-                      textAlign: "right",
-                      textDecoration: newTemplate?.length == 280 && "underline",
-                      color: [
-                        newTemplate?.length < 250
-                          ? "black"
-                          : newTemplate?.length < 270
-                          ? "darkred"
-                          : "rgba(221,28,26,1)",
-                      ],
-                    }}
-                  >
-                    {newTemplate?.length} / 280
-                  </span>
-                )}
+
                 <NavButtonBox send />
               </>
             }

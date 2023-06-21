@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@mui/material";
 import { BtnStyle } from "../../MUIStyles";
 import { Link } from "react-router-dom";
 
 
 export const Landing = () => {
+
   return (
     <>
       <div className="landingBG">
@@ -24,6 +25,7 @@ export const Landing = () => {
           </div>
         </div>
       </div>
+
     </>
   );
 };

@@ -1,130 +1,42 @@
 import React, { useState, useEffect, useRef } from "react";
-import { TextField } from "@mui/material";
-import DOMPurify from "dompurify";
 
-const TextFieldStyle = {
-    marginTop: "8px",
-    "& label.Mui-focused": {
-      color: "#537A8B",
-    },
-    "& .MuiInput-underline:after": {
-      borderBottomColor: "#537A8B",
-    },
-    "& .MuiFilledInput-underline:after": {
-      borderBottomColor: "#537A8B",
-    },
-    "& .MuiOutlinedInput-root": {
-      "&.Mui-focused fieldset": {
-        borderColor: "#537A8B",
-      },
-      "& .MuiSelect-root": {
-        "&.Mui-focused fieldset": {
-          borderColor: "#537A8B",
-        },
-      },
-    },
-  };
-  
-const EditableDiv = ({
-  substrings,
-  label,
-  body,
-  onBodyChange,
-  cursorPosition,
-  updateCursorPosition,
-}) => {
-  const [text, setText] = useState(body);
-  const [highlightedText, setHighlightedText] = useState("");
-  const [storedCursorPosition, setStoredCursorPosition] = useState(null);
-
-  const textFieldRef = useRef(null);
-  const inputRef = useRef(null);
-  const divRef = useRef(null);
-
-  const handleTextFieldChange = (e) => {
-    const newBody = e.target.value;
-    const position = inputRef.current.selectionStart;
-    updateCursorPosition(position);
-    setText(newBody);
-    onBodyChange(newBody);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const { selectionStart, selectionEnd, value } = inputRef.current;
-      const newValue =
-        value.substring(0, selectionStart) +
-        "\n" +
-        value.substring(selectionEnd);
-      setText(newValue);
-      onBodyChange(newValue);
-      updateCursorPosition(selectionStart + 1);
-    }
-  };
-
-  const handleTextFieldScroll = (e) => {
-    divRef.current.scrollTop = e.target.scrollTop;
-  };
-
-  const handleDivScroll = (e) => {
-    textFieldRef.current.firstChild.scrollTop = e.target.scrollTop;
-  };
+const EditableDiv = ({ substrings, label, body, onBodyChange, promptsChanged }) => {
+  const textFieldRef = useRef();
 
   useEffect(() => {
-    if (inputRef.current && cursorPosition !== null) {
-      setStoredCursorPosition(cursorPosition);
-    }
-  }, [cursorPosition]);
+    const textField = textFieldRef.current;
+    const textContent = textField.innerHTML;
 
-  useEffect(() => {
-    if (inputRef.current && storedCursorPosition !== null) {
-      inputRef.current.focus();
-      inputRef.current.setSelectionRange(
-        storedCursorPosition,
-        storedCursorPosition
+    //find and highlight prompt answers
+    const highlightedContent = substrings.reduce((content, answer) => {
+      // Check if the answer is "span", "class", or "name" exactly
+      if (
+        !promptsChanged ||
+        answer === "span" ||
+        answer === "class" ||
+        answer === "name" ||
+        answer.length < 4
+      ) {
+        return content; // Skip highlighting
+      }
+
+      const regex = new RegExp(answer, "gi");
+      return content.replace(
+        regex,
+        `<span class="fadeHighlight">${answer}</span>`
       );
-    }
-  }, [storedCursorPosition]);
+    }, textContent);
 
+    textField.innerHTML = highlightedContent;
+  }, [substrings]);
+
+  const [length, setLength] = useState(body?.length);
   useEffect(() => {
-    highlightSubstrings(body);
+    setLength(body?.length);
   }, [body]);
 
-  useEffect(() => {
-    if (textFieldRef.current && divRef.current) {
-      textFieldRef.current.firstChild.addEventListener(
-        "scroll",
-        handleTextFieldScroll
-      );
-      divRef.current.addEventListener("scroll", handleDivScroll);
-    }
-
-    return () => {
-      if (textFieldRef.current && divRef.current) {
-        textFieldRef.current.firstChild.removeEventListener(
-          "scroll",
-          handleTextFieldScroll
-        );
-        divRef.current.removeEventListener("scroll", handleDivScroll);
-      }
-    };
-  }, []);
-
-  const highlightSubstrings = (text) => {
-    let updatedHighlightedText = text || "";
-    substrings.forEach((substring) => {
-      const regex = new RegExp(substring, "gi");
-      updatedHighlightedText = updatedHighlightedText.replace(
-        regex,
-        `<span class="fadeHighlight">${substring}</span>`
-      );
-    });
-    setHighlightedText(updatedHighlightedText);
-  };
-
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <div
         style={{
           marginTop: "10px",
@@ -152,18 +64,7 @@ const EditableDiv = ({
         >
           {label}
         </label>
-        <TextField
-          ref={textFieldRef}
-          value={text}
-          onChange={handleTextFieldChange}
-          onKeyDown={handleKeyDown}
-          fullWidth
-          multiline
-          inputRef={inputRef}
-          style={{ position: "absolute", top: 0, left: 0, opacity: 0.2, height: '220px' }}
-        />
         <div
-          ref={divRef}
           style={{
             outline: "0px solid transparent",
             color: "black",
@@ -173,9 +74,37 @@ const EditableDiv = ({
             height: "auto",
             whiteSpace: "pre-wrap",
           }}
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(highlightedText || "") }}
-        />
+          contentEditable
+          ref={textFieldRef}
+          suppressContentEditableWarning={true}
+          autoFocus
+          onInput={(e) => setLength(e.target?.innerText.length)}
+          onBlur={() => onBodyChange(textFieldRef.current.innerText)}
+        >
+          {body}
+        </div>
       </div>
+
+      {label == "Your Tweet" && (
+        <span
+          style={{
+            width: "100%",
+            float: "right",
+            textAlign: "right",
+            margin: "0 0 0 auto",
+            textDecoration: length >= 280 && "underline",
+            color: [
+              length < 250
+                ? "black"
+                : length < 270
+                ? "darkred"
+                : "rgba(221,28,26,1)",
+            ],
+          }}
+        >
+          {length} / 280
+        </span>
+      )}
     </div>
   );
 };

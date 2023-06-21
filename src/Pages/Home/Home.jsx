@@ -39,7 +39,9 @@ export const Home = () => {
 
   return (
     <div>
+  
       <div className="homeContainer">
+        
         <section className="homeChild">
           <HomeCarousel />
         </section>

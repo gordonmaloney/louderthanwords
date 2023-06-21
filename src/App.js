@@ -50,7 +50,6 @@ const App = () => {
       </Helmet>
       <BrowserRouter>
         <Header />
-
         <Routes>
           <Route path="/" element={<Landing />} />
 
