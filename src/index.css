@@ -310,9 +310,9 @@ text-transform: uppercase;
   
   @keyframes fadeHighlight {
     0% {
-      color: red;
+      color: #DD1C1A;
     }
-    30%{color: red}
+    30%{color: #DD1C1A; }
     100% {
       color: inherit;
     }

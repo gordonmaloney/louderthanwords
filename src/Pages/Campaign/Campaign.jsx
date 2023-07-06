@@ -461,7 +461,7 @@ export const Campaign = ({ campaign }) => {
       setNewTemplate((old) =>
         old.replace(
           `<<TargetHandle>>`,
-          fetchedTargets.map((targ) => targ.handle)
+          fetchedTargets.map((targ) => {return targ.handle}).join(" ")
         )
       );
     }
@@ -529,22 +529,17 @@ export const Campaign = ({ campaign }) => {
     }
   }, [constituency, scotConstituency]);
 
-
   //logic to stop prompts being highlighted every time they're saved
-  const [promptsChanged, setPromptsChanged] = useState(false)
+  const [promptsChanged, setPromptsChanged] = useState(false);
   useEffect(() => {
-    setPromptsChanged(true)
-  }, [promptAnswers])
-
-
+    setPromptsChanged(true);
+  }, [promptAnswers]);
 
   //return loading screen if campaign not loaded
   if (!campaign) {
     return <>Loading...</>;
   }
 
-
-  
   return (
     <Box
       sx={{
@@ -785,6 +780,10 @@ export const Campaign = ({ campaign }) => {
                     />
                   </>
                 )}
+                {Object.values(promptAnswers).filter(
+                  (str) => str !== "noOptionSelected"
+                ).length > 0 &&
+                  <span style={{marginTop: "6px"}}>Make sure to check that your answers to the questions don't look odd!</span>}
 
                 <div style={{ position: "relative" }}>
                   <div style={{}}>
@@ -792,7 +791,7 @@ export const Campaign = ({ campaign }) => {
                       label={channel == "Email" ? "Body" : "Your Tweet"}
                       body={newTemplate}
                       onBodyChange={(e) => {
-                        setPromptsChanged(false)
+                        setPromptsChanged(false);
                         setNewTemplate(e);
                       }}
                       substrings={[

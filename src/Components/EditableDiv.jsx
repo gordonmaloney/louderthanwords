@@ -35,6 +35,7 @@ const EditableDiv = ({ substrings, label, body, onBodyChange, promptsChanged }) 
     setLength(body?.length);
   }, [body]);
 
+
   return (
     <div style={{ width: "100%" }}>
       <div
